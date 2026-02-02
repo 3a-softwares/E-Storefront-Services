@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "framework": null,
+  "installCommand": "echo \"install handled by CI\"",
+  "buildCommand": "echo \"build handled by CI\"",
+  "outputDirectory": "dist",
+  "git": {
+    "deploymentEnabled": false
+  }
+}
