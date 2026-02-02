@@ -1,48 +1,58 @@
-name: CD - Verify & Deploy to Vercel
+name: CI Pipeline
 
 on:
-  workflow_run:
-    workflows:
-      - CI - Lint, Format, Build, Test & Sonar
-    types:
-      - completed
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: 18
 
 jobs:
-  # ===================== 1️⃣ VERIFY =====================
-  verify:
-    name: Verify Build (All Services)
+  # ===================== LINT =====================
+  lint:
+    name: Lint (All Services)
     runs-on: ubuntu-latest
-
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build all services
-        run: yarn build
-
-  # ===================== 2️⃣ DEPLOY =====================
-  deploy:
-    name: Deploy - ${{ matrix.service }}
+  # ===================== FORMAT =====================
+  format:
+    name: Format Check
     runs-on: ubuntu-latest
-    needs: verify
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn format:check
 
+  # ===================== BUILD =====================
+  build:
+    name: Build (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    needs: format
     strategy:
       fail-fast: false
-      max-parallel: 3
       matrix:
         service:
           - auth-service
@@ -52,40 +62,69 @@ jobs:
           - order-service
           - product-service
           - ticket-service
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn workspace @3asoftwares/${{ matrix.service }} build
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Verify service build
-        working-directory: ./${{ matrix.service }}
-        run: yarn build
-
-      - name: Resolve Vercel Project ID
-        run: |
-          case "${{ matrix.service }}" in
-            auth-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_AUTH_SERVICE }}" >> $GITHUB_ENV ;;
-            category-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_CATEGORY_SERVICE }}" >> $GITHUB_ENV ;;
-            coupon-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_COUPON_SERVICE }}" >> $GITHUB_ENV ;;
-            graphql-gateway) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_GRAPHQL_GATEWAY }}" >> $GITHUB_ENV ;;
-            order-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_ORDER_SERVICE }}" >> $GITHUB_ENV ;;
-            product-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_PRODUCT_SERVICE }}" >> $GITHUB_ENV ;;
-            ticket-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_TICKET_SERVICE }}" >> $GITHUB_ENV ;;
-          esac
-
-      - name: Deploy to Vercel
-        uses: BetaHuhn/deploy-to-vercel-action@v1
+  # ===================== TEST =====================
+  test:
+    name: Test (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - auth-service
+          - category-service
+          - coupon-service
+          - graphql-gateway
+          - order-service
+          - product-service
+          - ticket-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn workspace @3asoftwares/${{ matrix.service }} test -- --passWithNoTests
+
+  # ===================== SONARQUBE =====================
+  sonarqube:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - uses: SonarSource/sonarcloud-github-action@master
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ env.PROJECT_ID }}
-          WORKING_DIRECTORY: ${{ matrix.service }}
-          PRODUCTION: true
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # ===================== SUMMARY =====================
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: sonarqube
+    steps:
+      - run: |
+          echo "✅ Lint passed"
+          echo "✅ Format passed"
+          echo "✅ Build passed for all services"
+          echo "✅ Tests passed for all services"
+          echo "✅ SonarQube analysis completed"
