@@ -2,14 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches:
-      - main
-      - develop
-      - feature/**
+    branches: [main, develop, feature/**]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -36,20 +31,13 @@ jobs:
         id: filter
         with:
           filters: |
-            auth:
-              - auth-service/**
-            category:
-              - category-service/**
-            coupon:
-              - coupon-service/**
-            graphql:
-              - graphql-gateway/**
-            order:
-              - order-service/**
-            product:
-              - product-service/**
-            ticket:
-              - ticket-service/**
+            auth: auth-service/**
+            category: category-service/**
+            coupon: coupon-service/**
+            graphql: graphql-gateway/**
+            order: order-service/**
+            product: product-service/**
+            ticket: ticket-service/**
 
   # ===================== LINT =====================
   lint:
@@ -86,20 +74,21 @@ jobs:
       matrix:
         include:
           - service: auth-service
-            flag: auth
+            should_run: ${{ needs.detect-changes.outputs.auth == 'true' }}
           - service: category-service
-            flag: category
+            should_run: ${{ needs.detect-changes.outputs.category == 'true' }}
           - service: coupon-service
-            flag: coupon
+            should_run: ${{ needs.detect-changes.outputs.coupon == 'true' }}
           - service: graphql-gateway
-            flag: graphql
+            should_run: ${{ needs.detect-changes.outputs.graphql == 'true' }}
           - service: order-service
-            flag: order
+            should_run: ${{ needs.detect-changes.outputs.order == 'true' }}
           - service: product-service
-            flag: product
+            should_run: ${{ needs.detect-changes.outputs.product == 'true' }}
           - service: ticket-service
-            flag: ticket
-    if: needs.detect-changes.outputs[matrix.flag] == 'true'
+            should_run: ${{ needs.detect-changes.outputs.ticket == 'true' }}
+
+    if: matrix.should_run
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -118,20 +107,21 @@ jobs:
       matrix:
         include:
           - service: auth-service
-            flag: auth
+            should_run: ${{ needs.detect-changes.outputs.auth == 'true' }}
           - service: category-service
-            flag: category
+            should_run: ${{ needs.detect-changes.outputs.category == 'true' }}
           - service: coupon-service
-            flag: coupon
+            should_run: ${{ needs.detect-changes.outputs.coupon == 'true' }}
           - service: graphql-gateway
-            flag: graphql
+            should_run: ${{ needs.detect-changes.outputs.graphql == 'true' }}
           - service: order-service
-            flag: order
+            should_run: ${{ needs.detect-changes.outputs.order == 'true' }}
           - service: product-service
-            flag: product
+            should_run: ${{ needs.detect-changes.outputs.product == 'true' }}
           - service: ticket-service
-            flag: ticket
-    if: needs.detect-changes.outputs[matrix.flag] == 'true'
+            should_run: ${{ needs.detect-changes.outputs.ticket == 'true' }}
+
+    if: matrix.should_run
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
