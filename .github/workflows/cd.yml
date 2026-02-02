@@ -30,8 +30,6 @@ jobs:
       ticket: ${{ steps.filter.outputs.ticket }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: dorny/paths-filter@v3
         id: filter
@@ -76,13 +74,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: yarn
+
+      # ✅ FIX: INSTALL VERCEL CLI
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
       - run: yarn install --frozen-lockfile
 
@@ -111,11 +110,10 @@ jobs:
           (matrix.service == 'order-service' && needs.detect-changes.outputs.order == 'true') ||
           (matrix.service == 'product-service' && needs.detect-changes.outputs.product == 'true') ||
           (matrix.service == 'ticket-service' && needs.detect-changes.outputs.ticket == 'true')
-        uses: BetaHuhn/deploy-to-vercel-action@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel deploy --prod \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --cwd=${{ matrix.service }}
+        env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.PROJECT_ID }}
-          WORKING_DIRECTORY: ${{ matrix.service }}
-          PRODUCTION: true
