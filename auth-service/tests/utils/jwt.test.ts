@@ -5,7 +5,6 @@ import {
   verifyAccessToken,
   verifyRefreshToken,
   decodeToken,
-  TokenPayload,
 } from '../../src/utils/jwt';
 import { UserRole } from '@3asoftwares/types';
 
@@ -148,7 +147,6 @@ describe('JWT Utils', () => {
       const tamperedToken = token.slice(0, -3) + 'xxx';
 
       // decodeToken should still work as it doesn't verify
-      const payload = decodeToken(tamperedToken);
       // May or may not work depending on how much is tampered
       // Just checking it doesn't throw
       expect(() => decodeToken(tamperedToken)).not.toThrow();

@@ -184,7 +184,7 @@ describe('Environment Configuration', () => {
 
     it('should support valid NODE_ENV values', () => {
       const validEnvs = ['development', 'test', 'production'];
-      validEnvs.forEach((env) => {
+      validEnvs.forEach(() => {
         expect(validEnvs).toContain(process.env.NODE_ENV);
       });
     });

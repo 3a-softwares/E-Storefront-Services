@@ -1,5 +1,3 @@
-
-
 import { Request, Response } from 'express';
 import User from '../models/User';
 import { Logger } from '@3asoftwares/utils/server';
@@ -88,7 +86,11 @@ export const updateUserRole = async (req: Request, res: Response): Promise<void>
     user.role = role;
     await user.save();
 
-    Logger.info('User role updated successfully', { userId: id, previousRole, newRole: role }, 'UserController');
+    Logger.info(
+      'User role updated successfully',
+      { userId: id, previousRole, newRole: role },
+      'UserController'
+    );
 
     res.json({
       success: true,

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import * as addressController from '../../src/controllers/addressController';
 import Address from '../../src/models/Address';
-import mongoose from 'mongoose';
 
 // Mock Address model
 jest.mock('../../src/models/Address');

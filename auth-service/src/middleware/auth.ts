@@ -1,5 +1,3 @@
-
-
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, TokenPayload } from '../utils/jwt';
 import { Logger } from '@3asoftwares/utils/server';

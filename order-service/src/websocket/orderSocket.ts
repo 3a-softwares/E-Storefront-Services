@@ -1,5 +1,3 @@
-
-
 import { Server as SocketIOServer } from 'socket.io';
 import { Server as HTTPServer } from 'http';
 import { DEFAULT_CORS_ORIGINS } from '@3asoftwares/utils';
@@ -46,7 +44,11 @@ export const emitOrderUpdate = (customerId: string, order: any) => {
       paymentStatus: order.paymentStatus,
       timestamp: new Date().toISOString(),
     });
-    Logger.debug('Order update emitted', { customerId, orderId: order._id, orderStatus: order.orderStatus }, 'WebSocket');
+    Logger.debug(
+      'Order update emitted',
+      { customerId, orderId: order._id, orderStatus: order.orderStatus },
+      'WebSocket'
+    );
   }
 };
 
@@ -60,7 +62,11 @@ export const emitAdminAlert = (order: any) => {
       total: order.total,
       timestamp: new Date().toISOString(),
     });
-    Logger.info('Admin alert emitted for new order', { orderId: order._id, orderNumber: order.orderNumber }, 'WebSocket');
+    Logger.info(
+      'Admin alert emitted for new order',
+      { orderId: order._id, orderNumber: order.orderNumber },
+      'WebSocket'
+    );
   }
 };
 

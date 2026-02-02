@@ -28,7 +28,7 @@ describe('Dashboard Resolvers', () => {
         data: {
           data: {
             totalOrders: 100,
-            totalRevenue: 5000.50,
+            totalRevenue: 5000.5,
             pendingOrders: 15,
           },
         },
@@ -45,16 +45,12 @@ describe('Dashboard Resolvers', () => {
       (orderClient.get as jest.Mock).mockResolvedValue(mockOrderStats);
       (authClient.get as jest.Mock).mockResolvedValue(mockAuthStats);
 
-      const result = await dashboardResolvers.Query.dashboardStats(
-        null,
-        {},
-        mockContext
-      );
+      const result = await dashboardResolvers.Query.dashboardStats(null, {}, mockContext);
 
       expect(result).toEqual({
         totalUsers: 250,
         totalOrders: 100,
-        totalRevenue: 5000.50,
+        totalRevenue: 5000.5,
         pendingOrders: 15,
       });
 
@@ -77,11 +73,7 @@ describe('Dashboard Resolvers', () => {
       (orderClient.get as jest.Mock).mockResolvedValue(mockOrderStats);
       (authClient.get as jest.Mock).mockRejectedValue(new Error('Unauthorized'));
 
-      const result = await dashboardResolvers.Query.dashboardStats(
-        null,
-        {},
-        mockContextNoToken
-      );
+      const result = await dashboardResolvers.Query.dashboardStats(null, {}, mockContextNoToken);
 
       expect(result).toEqual({
         totalUsers: 0,
@@ -105,11 +97,7 @@ describe('Dashboard Resolvers', () => {
       (orderClient.get as jest.Mock).mockResolvedValue(mockOrderStats);
       (authClient.get as jest.Mock).mockRejectedValue(new Error('Service unavailable'));
 
-      const result = await dashboardResolvers.Query.dashboardStats(
-        null,
-        {},
-        mockContext
-      );
+      const result = await dashboardResolvers.Query.dashboardStats(null, {}, mockContext);
 
       expect(result.totalUsers).toBe(0);
       expect(result.totalOrders).toBe(100);
@@ -119,11 +107,7 @@ describe('Dashboard Resolvers', () => {
       (orderClient.get as jest.Mock).mockRejectedValue(new Error('Service unavailable'));
       (authClient.get as jest.Mock).mockRejectedValue(new Error('Service unavailable'));
 
-      const result = await dashboardResolvers.Query.dashboardStats(
-        null,
-        {},
-        mockContext
-      );
+      const result = await dashboardResolvers.Query.dashboardStats(null, {}, mockContext);
 
       expect(result).toEqual({
         totalUsers: 0,
@@ -151,11 +135,7 @@ describe('Dashboard Resolvers', () => {
       (orderClient.get as jest.Mock).mockResolvedValue(mockOrderStats);
       (authClient.get as jest.Mock).mockResolvedValue(mockAuthStats);
 
-      const result = await dashboardResolvers.Query.dashboardStats(
-        null,
-        {},
-        mockContext
-      );
+      const result = await dashboardResolvers.Query.dashboardStats(null, {}, mockContext);
 
       expect(result).toEqual({
         totalUsers: 100,
@@ -181,11 +161,7 @@ describe('Dashboard Resolvers', () => {
       (orderClient.get as jest.Mock).mockResolvedValue(mockOrderStats);
       (authClient.get as jest.Mock).mockResolvedValue(mockAuthStats);
 
-      const result = await dashboardResolvers.Query.dashboardStats(
-        null,
-        {},
-        mockContext
-      );
+      const result = await dashboardResolvers.Query.dashboardStats(null, {}, mockContext);
 
       expect(result).toEqual({
         totalUsers: 0,

@@ -17,7 +17,11 @@ export interface UseCaseResult<T> {
 }
 
 export class UseCaseError extends Error {
-  constructor(message: string, public code: string, public field?: string) {
+  constructor(
+    message: string,
+    public code: string,
+    public field?: string
+  ) {
     super(message);
     this.name = 'UseCaseError';
   }

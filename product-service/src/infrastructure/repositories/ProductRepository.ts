@@ -12,26 +12,26 @@ import {
 } from '../../domain/repositories/IProductRepository';
 
 export class MongoProductRepository implements IProductRepository {
-  private toEntity(doc: any): Product {
+  private toEntity(doc: Record<string, unknown>): Product {
     return Product.fromPersistence({
-      id: doc._id.toString(),
-      name: doc.name,
-      description: doc.description,
-      price: doc.price,
-      category: doc.category,
-      stock: doc.stock,
-      imageUrl: doc.imageUrl,
-      sellerId: doc.sellerId,
-      isActive: doc.isActive,
-      tags: doc.tags,
-      rating: doc.rating,
-      reviewCount: doc.reviewCount,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
+      id: String(doc._id),
+      name: String(doc.name),
+      description: String(doc.description),
+      price: Number(doc.price),
+      category: String(doc.category),
+      stock: Number(doc.stock),
+      imageUrl: String(doc.imageUrl),
+      sellerId: String(doc.sellerId),
+      isActive: Boolean(doc.isActive),
+      tags: Array.isArray(doc.tags) ? (doc.tags as string[]) : [],
+      rating: Number(doc.rating),
+      reviewCount: Number(doc.reviewCount),
+      createdAt: doc.createdAt instanceof Date ? doc.createdAt : new Date(),
+      updatedAt: doc.updatedAt instanceof Date ? doc.updatedAt : new Date(),
     });
   }
 
-  private toPersistence(product: Product): any {
+  private toPersistence(product: Product): Record<string, unknown> {
     const props = product.toPersistence();
     return {
       name: props.name,
@@ -62,7 +62,7 @@ export class MongoProductRepository implements IProductRepository {
     filters: ProductFilterOptions = {},
     pagination: PaginationOptions = { page: 1, limit: 20 }
   ): Promise<PaginatedResult<Product>> {
-    const query: any = {};
+    const query: Record<string, unknown> = {};
 
     if (filters.isActive !== undefined) {
       query.isActive = filters.isActive;
@@ -85,9 +85,10 @@ export class MongoProductRepository implements IProductRepository {
     }
 
     if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
-      query.price = {};
-      if (filters.minPrice !== undefined) query.price.$gte = filters.minPrice;
-      if (filters.maxPrice !== undefined) query.price.$lte = filters.maxPrice;
+      const priceQuery: Record<string, number> = {};
+      if (filters.minPrice !== undefined) priceQuery.$gte = filters.minPrice;
+      if (filters.maxPrice !== undefined) priceQuery.$lte = filters.maxPrice;
+      query.price = priceQuery;
     }
 
     if (filters.tags && filters.tags.length > 0) {
@@ -135,21 +136,17 @@ export class MongoProductRepository implements IProductRepository {
   async save(product: Product): Promise<Product> {
     const doc = new ProductModel(this.toPersistence(product));
     const saved = await doc.save();
-    return this.toEntity(saved.toObject());
+    return this.toEntity(saved.toObject() as unknown as Record<string, unknown>);
   }
 
   async update(id: string, product: Product): Promise<Product | null> {
-    const updated = await ProductModel.findByIdAndUpdate(
-      id,
-      {
-        ...this.toPersistence(product),
-        updatedAt: new Date(),
-      },
-      { new: true, runValidators: true }
-    ).lean();
+    const updated = await ProductModel.findByIdAndUpdate(id, this.toPersistence(product), {
+      new: true,
+      runValidators: true,
+    }).lean();
 
     if (!updated) return null;
-    return this.toEntity(updated);
+    return this.toEntity(updated as Record<string, unknown>);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -163,7 +160,7 @@ export class MongoProductRepository implements IProductRepository {
   }
 
   async count(filters: ProductFilterOptions = {}): Promise<number> {
-    const query: any = {};
+    const query: Record<string, unknown> = {};
 
     if (filters.isActive !== undefined) {
       query.isActive = filters.isActive;

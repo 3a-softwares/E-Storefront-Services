@@ -1,0 +1,81 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "tsconfigRootDir": ".",
+    "project": [
+      "./auth-service/tsconfig.json",
+      "./auth-service/tsconfig.test.json",
+      "./category-service/tsconfig.json",
+      "./category-service/tsconfig.test.json",
+      "./coupon-service/tsconfig.json",
+      "./coupon-service/tsconfig.test.json",
+      "./graphql-gateway/tsconfig.json",
+      "./graphql-gateway/tsconfig.test.json",
+      "./order-service/tsconfig.json",
+      "./order-service/tsconfig.test.json",
+      "./product-service/tsconfig.json",
+      "./product-service/tsconfig.test.json",
+      "./ticket-service/tsconfig.json",
+      "./ticket-service/tsconfig.test.json"
+    ]
+  },
+  "env": {
+    "node": true,
+    "es2022": true,
+    "jest": true
+  },
+
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+
+  "rules": {
+    "no-var": "error",
+    "prefer-const": "error",
+    "eqeqeq": ["error", "always"]
+  },
+
+  "overrides": [
+    {
+      "files": ["**/src/**/*.ts"],
+      "extends": ["plugin:@typescript-eslint/recommended-requiring-type-checking"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+
+        "@typescript-eslint/no-misused-promises": "off",
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/require-await": "off"
+      }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.spec.ts", "**/tests/**/*"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-misused-promises": "off",
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/require-await": "off"
+      }
+    },
+    {
+      "files": ["**/src/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/no-unsafe-enum-comparison": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+      }
+    }
+  ]
+}

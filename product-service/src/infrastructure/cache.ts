@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
 import dotenv from 'dotenv';
-import { DATABASE_CONFIG } from '@3asoftwares/utils';
+import { DATABASE_CONFIG, Logger } from '@3asoftwares/utils';
 dotenv.config();
 
 const REDIS_URL = process.env.REDIS_URL || DATABASE_CONFIG.REDIS_URL;
@@ -14,11 +14,11 @@ export const redisClient = new Redis(REDIS_URL, {
 });
 
 redisClient.on('connect', () => {
-  console.log('Connected to Redis server');
+  Logger.info('Connected to Redis server', null, 'CacheService');
 });
 
 redisClient.on('error', (error) => {
-  console.error('Redis error:', error);
+  Logger.error('Redis connection error', error, 'CacheService');
 });
 
 export class CacheService {
@@ -28,7 +28,7 @@ export class CacheService {
       if (!data) return null;
       return JSON.parse(data) as T;
     } catch (error) {
-      console.error('CacheService get error:', error);
+      Logger.error('CacheService get error', error, 'CacheService');
       return null;
     }
   }
@@ -103,12 +103,12 @@ export const CacheKeys = {
 };
 
 export const CacheTTL = {
-  PRODUCTS: 3600, 
-  PRODUCT_DETAIL: 1800, 
-  CATEGORIES: 7200, 
-  ORDERS: 300, 
-  USERS: 1800, 
-  SESSION: 86400, 
-  CART: 604800, 
-  STATS: 300, 
+  PRODUCTS: 3600,
+  PRODUCT_DETAIL: 1800,
+  CATEGORIES: 7200,
+  ORDERS: 300,
+  USERS: 1800,
+  SESSION: 86400,
+  CART: 604800,
+  STATS: 300,
 };

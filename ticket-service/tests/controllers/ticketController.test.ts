@@ -38,7 +38,7 @@ describe('TicketController', () => {
 
   describe('getAllTickets', () => {
     it('should return all tickets with pagination', async () => {
-      const mockTickets = [
+      const mockTickets: Array<Record<string, unknown>> = [
         {
           _id: 'ticket1',
           ticketId: 'TKT-001',
@@ -98,7 +98,9 @@ describe('TicketController', () => {
 
       await ticketController.getAllTickets(mockRequest as Request, mockResponse as Response);
 
-      expect(Ticket.find).toHaveBeenCalledWith(expect.objectContaining({ status: 'open' }));
+      expect((Ticket.find as jest.Mock).mock.calls[0][0]).toEqual(
+        expect.objectContaining({ status: 'open' })
+      );
       expect(responseStatus).toHaveBeenCalledWith(200);
     });
 
@@ -141,7 +143,7 @@ describe('TicketController', () => {
 
       await ticketController.getTicketById(mockRequest as Request, mockResponse as Response);
 
-      expect(Ticket.findById).toHaveBeenCalledWith('ticket1');
+      expect((Ticket.findById as jest.Mock).mock.calls[0][0]).toBe('ticket1');
       expect(responseStatus).toHaveBeenCalledWith(200);
       expect(responseJson).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -255,11 +257,14 @@ describe('TicketController', () => {
 
       await ticketController.updateTicket(mockRequest as Request, mockResponse as Response);
 
-      expect(Ticket.findByIdAndUpdate).toHaveBeenCalledWith(
-        'ticket1',
-        expect.objectContaining({ subject: 'Updated Subject', status: 'in-progress' }),
-        { new: true, runValidators: true }
+      expect((Ticket.findByIdAndUpdate as jest.Mock).mock.calls[0][0]).toBe('ticket1');
+      expect((Ticket.findByIdAndUpdate as jest.Mock).mock.calls[0][1]).toEqual(
+        expect.objectContaining({ subject: 'Updated Subject', status: 'in-progress' })
       );
+      expect((Ticket.findByIdAndUpdate as jest.Mock).mock.calls[0][2]).toEqual({
+        new: true,
+        runValidators: true,
+      });
       expect(responseStatus).toHaveBeenCalledWith(200);
       expect(responseJson).toHaveBeenCalledWith(
         expect.objectContaining({

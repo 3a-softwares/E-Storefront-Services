@@ -9,7 +9,7 @@ import path from 'path';
 const envPath = path.resolve(__dirname, '../.env.local');
 dotenv.config({ path: envPath });
 
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';

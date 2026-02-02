@@ -1,5 +1,3 @@
-
-
 import { SERVICE_URLS } from '@3asoftwares/utils';
 import axios, { AxiosInstance } from 'axios';
 

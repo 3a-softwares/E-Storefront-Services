@@ -19,7 +19,7 @@ describe('OrderController', () => {
     mockRequest = {
       body: {},
       params: {},
-      query: {}
+      query: {},
     };
     mockResponse = {
       status: responseStatus,

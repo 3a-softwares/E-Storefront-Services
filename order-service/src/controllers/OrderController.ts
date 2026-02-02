@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
-import { OrderStatus, PaymentStatus } from '@3asoftwares/types';
+import { IOrder, OrderStatus, PaymentStatus } from '@3asoftwares/types';
 import { Logger } from '@3asoftwares/utils/server';
+import { Document } from 'mongoose';
 
 export const getAllOrders = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -158,7 +159,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     }
 
     const sellerIds = Object.keys(itemsBySeller);
-    const createdOrders = [];
+    const createdOrders: Array<Document & IOrder> = [];
 
     Logger.debug(
       'Order items grouped by seller',

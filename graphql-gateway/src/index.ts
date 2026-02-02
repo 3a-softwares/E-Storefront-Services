@@ -56,7 +56,7 @@ async function startApolloServer() {
     expressMiddleware(server, {
       context: async ({ req }) => {
         const token = req.headers.authorization?.replace('Bearer ', '') || '';
-        let user = null;
+        let user = {};
 
         if (token) {
           try {

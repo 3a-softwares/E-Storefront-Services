@@ -37,9 +37,10 @@ export interface CreateProductOutput {
   };
 }
 
-export class CreateProductUseCase
-  implements UseCase<CreateProductInput, UseCaseResult<CreateProductOutput>>
-{
+export class CreateProductUseCase implements UseCase<
+  CreateProductInput,
+  UseCaseResult<CreateProductOutput>
+> {
   constructor(private readonly productRepository: IProductRepository) {}
 
   async execute(input: CreateProductInput): Promise<UseCaseResult<CreateProductOutput>> {
@@ -82,19 +83,21 @@ export class CreateProductUseCase
           },
         },
       };
-    } catch (error: any) {
-      if (error.name === 'ProductValidationError') {
+    } catch (error: unknown) {
+      const err = error as { name?: string; message?: string; field?: string };
+      if (err.name === 'ProductValidationError') {
         return {
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: error.message,
-            field: error.field,
+            message: err.message || 'Validation error',
+            field: err.field,
           },
         };
       }
 
-      throw new UseCaseError(error.message || 'Failed to create product', 'CREATE_PRODUCT_ERROR');
+      const message = err instanceof Error ? err.message : 'Failed to create product';
+      throw new UseCaseError(message, 'CREATE_PRODUCT_ERROR');
     }
   }
 }

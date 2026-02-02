@@ -553,7 +553,11 @@ export const getTicketStats = async (req: Request, res: Response) => {
         .select('ticketId subject status priority category customerName createdAt');
     }
 
-    Logger.info('getTicketStats', { total, open, inProgress, userTicketsCount: userTickets.length }, 'TicketController');
+    Logger.info(
+      'getTicketStats',
+      { total, open, inProgress, userTicketsCount: userTickets.length },
+      'TicketController'
+    );
 
     res.status(200).json({
       success: true,

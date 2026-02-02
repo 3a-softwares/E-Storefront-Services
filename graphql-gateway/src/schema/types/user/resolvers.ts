@@ -223,7 +223,11 @@ export const userResolvers = {
       return true;
     },
 
-    updateProfile: async (_: any, { input }: { input: { name?: string; phone?: string } }, context: any) => {
+    updateProfile: async (
+      _: any,
+      { input }: { input: { name?: string; phone?: string } },
+      context: any
+    ) => {
       if (!context.token) {
         throw new Error('Not authenticated');
       }
@@ -232,12 +236,10 @@ export const userResolvers = {
         const updateData: { name?: string; phone?: string } = {};
         if (input.name) updateData.name = input.name;
         if (input.phone !== undefined) updateData.phone = input.phone;
-        
-        const response = await authClient.put(
-          '/api/auth/me',
-          updateData,
-          { headers: authHeader.headers }
-        );
+
+        const response = await authClient.put('/api/auth/me', updateData, {
+          headers: authHeader.headers,
+        });
         const user = response.data.data?.user;
         return {
           success: response.data.success,

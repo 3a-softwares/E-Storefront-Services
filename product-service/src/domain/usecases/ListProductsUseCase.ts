@@ -56,9 +56,10 @@ export interface ListProductsOutput {
   };
 }
 
-export class ListProductsUseCase
-  implements UseCase<ListProductsInput, UseCaseResult<ListProductsOutput>>
-{
+export class ListProductsUseCase implements UseCase<
+  ListProductsInput,
+  UseCaseResult<ListProductsOutput>
+> {
   constructor(private readonly productRepository: IProductRepository) {}
 
   async execute(input: ListProductsInput): Promise<UseCaseResult<ListProductsOutput>> {

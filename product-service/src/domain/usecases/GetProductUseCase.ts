@@ -3,7 +3,6 @@
  * Handles the business logic for retrieving a product by ID
  */
 
-import { Product } from '../entities/Product';
 import { IProductRepository } from '../repositories/IProductRepository';
 import { UseCase, UseCaseResult, UseCaseError } from './UseCase';
 
@@ -30,9 +29,10 @@ export interface GetProductOutput {
   };
 }
 
-export class GetProductUseCase
-  implements UseCase<GetProductInput, UseCaseResult<GetProductOutput>>
-{
+export class GetProductUseCase implements UseCase<
+  GetProductInput,
+  UseCaseResult<GetProductOutput>
+> {
   constructor(private readonly productRepository: IProductRepository) {}
 
   async execute(input: GetProductInput): Promise<UseCaseResult<GetProductOutput>> {

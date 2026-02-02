@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [
+    { "path": "auth-service" },
+    { "path": "category-service" },
+    { "path": "coupon-service" },
+    { "path": "graphql-gateway" },
+    { "path": "order-service" },
+    { "path": "product-service" },
+    { "path": "ticket-service" }
+  ]
+}

@@ -68,7 +68,11 @@ export const createReview = async (req: Request, res: Response): Promise<void> =
     // Check if user already reviewed this product
     const existingReview = await Review.findOne({ productId, userId });
     if (existingReview) {
-      Logger.warn('Review creation failed - user already reviewed', { productId, userId }, 'ReviewController');
+      Logger.warn(
+        'Review creation failed - user already reviewed',
+        { productId, userId },
+        'ReviewController'
+      );
       res.status(400).json({
         success: false,
         message: 'You have already reviewed this product',
@@ -87,7 +91,11 @@ export const createReview = async (req: Request, res: Response): Promise<void> =
 
     await review.save();
 
-    Logger.debug('Review saved, updating product rating', { productId, reviewId: review._id }, 'ReviewController');
+    Logger.debug(
+      'Review saved, updating product rating',
+      { productId, reviewId: review._id },
+      'ReviewController'
+    );
 
     // Update product rating
     const allReviews = await Review.find({ productId, isApproved: true });
@@ -99,7 +107,11 @@ export const createReview = async (req: Request, res: Response): Promise<void> =
       reviewCount: allReviews.length,
     });
 
-    Logger.info('Review created successfully', { reviewId: review._id, productId, rating }, 'ReviewController');
+    Logger.info(
+      'Review created successfully',
+      { reviewId: review._id, productId, rating },
+      'ReviewController'
+    );
 
     res.status(201).json({
       success: true,
@@ -147,7 +159,11 @@ export const markReviewHelpful = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    Logger.debug('Review marked as helpful', { reviewId, helpfulCount: review.helpful }, 'ReviewController');
+    Logger.debug(
+      'Review marked as helpful',
+      { reviewId, helpfulCount: review.helpful },
+      'ReviewController'
+    );
 
     res.status(200).json({
       success: true,
@@ -185,7 +201,11 @@ export const deleteReview = async (req: Request, res: Response): Promise<void> =
 
     // Check if user owns the review
     if (review.userId !== userId) {
-      Logger.warn('Unauthorized review deletion attempt', { reviewId, userId, ownerId: review.userId }, 'ReviewController');
+      Logger.warn(
+        'Unauthorized review deletion attempt',
+        { reviewId, userId, ownerId: review.userId },
+        'ReviewController'
+      );
       res.status(403).json({
         success: false,
         message: 'You can only delete your own reviews',
@@ -195,7 +215,11 @@ export const deleteReview = async (req: Request, res: Response): Promise<void> =
 
     await Review.findByIdAndDelete(reviewId);
 
-    Logger.debug('Review deleted, updating product rating', { reviewId, productId: review.productId }, 'ReviewController');
+    Logger.debug(
+      'Review deleted, updating product rating',
+      { reviewId, productId: review.productId },
+      'ReviewController'
+    );
 
     // Update product rating
     const productId = review.productId;

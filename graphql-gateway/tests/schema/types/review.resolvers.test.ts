@@ -37,10 +37,11 @@ describe('Review Resolvers', () => {
 
       (productClient.get as jest.Mock).mockResolvedValue(mockReviews);
 
-      const result = await reviewResolvers.Query.productReviews(
-        null,
-        { productId: 'product123', page: 1, limit: 10 }
-      );
+      const result = await reviewResolvers.Query.productReviews(null, {
+        productId: 'product123',
+        page: 1,
+        limit: 10,
+      });
 
       expect(result).toEqual(mockReviews.data.data);
       expect(productClient.get).toHaveBeenCalledWith('/api/reviews/product123', {
@@ -61,10 +62,7 @@ describe('Review Resolvers', () => {
     it('should return empty reviews on error', async () => {
       (productClient.get as jest.Mock).mockRejectedValue(new Error('Service unavailable'));
 
-      const result = await reviewResolvers.Query.productReviews(
-        null,
-        { productId: 'product123' }
-      );
+      const result = await reviewResolvers.Query.productReviews(null, { productId: 'product123' });
 
       expect(result).toEqual({
         reviews: [],
@@ -175,10 +173,9 @@ describe('Review Resolvers', () => {
 
       (productClient.post as jest.Mock).mockResolvedValue(mockReview);
 
-      const result = await reviewResolvers.Mutation.markReviewHelpful(
-        null,
-        { reviewId: 'review123' }
-      );
+      const result = await reviewResolvers.Mutation.markReviewHelpful(null, {
+        reviewId: 'review123',
+      });
 
       expect(result).toEqual(mockReview.data.data);
     });
@@ -218,11 +215,7 @@ describe('Review Resolvers', () => {
 
     it('should throw error when not authenticated', async () => {
       await expect(
-        reviewResolvers.Mutation.deleteReview(
-          null,
-          { reviewId: 'review123' },
-          mockContextNoToken
-        )
+        reviewResolvers.Mutation.deleteReview(null, { reviewId: 'review123' }, mockContextNoToken)
       ).rejects.toThrow('You must be logged in to delete a review');
     });
 
@@ -241,11 +234,7 @@ describe('Review Resolvers', () => {
       });
 
       await expect(
-        reviewResolvers.Mutation.deleteReview(
-          null,
-          { reviewId: 'review123' },
-          mockContext
-        )
+        reviewResolvers.Mutation.deleteReview(null, { reviewId: 'review123' }, mockContext)
       ).rejects.toThrow('Not authorized');
     });
   });

@@ -1,11 +1,8 @@
-
-
 import { UserRole } from '@3asoftwares/types';
 import { Request, Response, NextFunction } from 'express';
 
 export const requireRole = (...allowedRoles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    
     if (!req.user) {
       res.status(401).json({
         success: false,

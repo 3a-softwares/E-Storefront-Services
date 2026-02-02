@@ -14,7 +14,11 @@ export const getAllProducts = async (req: Request, res: Response): Promise<void>
     const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice as string) : undefined;
     const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice as string) : undefined;
 
-    Logger.debug('Fetching products', { page, limit, search, category, sellerId, featured }, 'ProductController');
+    Logger.debug(
+      'Fetching products',
+      { page, limit, search, category, sellerId, featured },
+      'ProductController'
+    );
 
     let sortBy = (req.query.sortBy as string) || 'createdAt';
     let sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
@@ -151,7 +155,11 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
 
     await CacheService.set(cacheKey, product, CacheTTL.PRODUCT_DETAIL);
 
-    Logger.debug('Product fetched successfully', { productId: id, name: product.name }, 'ProductController');
+    Logger.debug(
+      'Product fetched successfully',
+      { productId: id, name: product.name },
+      'ProductController'
+    );
 
     res.status(200).json({
       success: true,
@@ -170,14 +178,22 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
 
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    Logger.info('Creating new product', { name: req.body.name, sellerId: req.body.sellerId, image: req.body.image }, 'ProductController');
+    Logger.info(
+      'Creating new product',
+      { name: req.body.name, sellerId: req.body.sellerId, image: req.body.image },
+      'ProductController'
+    );
 
     const product = new Product(req.body);
     await product.save();
 
     await CacheService.deletePattern('products:*');
 
-    Logger.info('Product created successfully', { productId: product._id, name: product.name }, 'ProductController');
+    Logger.info(
+      'Product created successfully',
+      { productId: product._id, name: product.name },
+      'ProductController'
+    );
 
     res.status(201).json({
       success: true,
@@ -216,7 +232,11 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
     await CacheService.delete(CacheKeys.product(id));
     await CacheService.deletePattern('products:*');
 
-    Logger.info('Product updated successfully', { productId: id, name: product.name }, 'ProductController');
+    Logger.info(
+      'Product updated successfully',
+      { productId: id, name: product.name },
+      'ProductController'
+    );
 
     res.status(200).json({
       success: true,
@@ -238,11 +258,7 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
     const { id } = req.params;
     Logger.info('Deleting product (soft delete)', { productId: id }, 'ProductController');
 
-    const product = await Product.findByIdAndUpdate(
-      id,
-      { isActive: false },
-      { new: true }
-    );
+    const product = await Product.findByIdAndUpdate(id, { isActive: false }, { new: true });
 
     if (!product) {
       Logger.warn('Product not found for deletion', { productId: id }, 'ProductController');
@@ -253,7 +269,11 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    Logger.info('Product deleted successfully', { productId: id, name: product.name }, 'ProductController');
+    Logger.info(
+      'Product deleted successfully',
+      { productId: id, name: product.name },
+      'ProductController'
+    );
 
     res.status(200).json({
       success: true,
@@ -279,7 +299,11 @@ export const getProductsBySeller = async (req: Request, res: Response): Promise<
       isActive: true,
     }).sort({ createdAt: -1 });
 
-    Logger.info(`Fetched ${products.length} products for seller`, { sellerId }, 'ProductController');
+    Logger.info(
+      `Fetched ${products.length} products for seller`,
+      { sellerId },
+      'ProductController'
+    );
 
     res.status(200).json({
       success: true,

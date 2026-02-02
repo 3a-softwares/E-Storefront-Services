@@ -39,11 +39,7 @@ describe('Coupon Resolvers', () => {
 
       (couponClient.get as jest.Mock).mockResolvedValue(mockCoupons);
 
-      const result = await couponResolvers.Query.coupons(
-        null,
-        { page: 1, limit: 10 },
-        mockContext
-      );
+      const result = await couponResolvers.Query.coupons(null, { page: 1, limit: 10 }, mockContext);
 
       expect(result).toEqual(mockCoupons.data.data);
     });
@@ -51,11 +47,7 @@ describe('Coupon Resolvers', () => {
     it('should filter by search and isActive', async () => {
       (couponClient.get as jest.Mock).mockResolvedValue({ data: { data: { coupons: [] } } });
 
-      await couponResolvers.Query.coupons(
-        null,
-        { search: 'SAVE', isActive: true },
-        mockContext
-      );
+      await couponResolvers.Query.coupons(null, { search: 'SAVE', isActive: true }, mockContext);
 
       expect(couponClient.get).toHaveBeenCalledWith('/api/coupons', {
         params: { search: 'SAVE', isActive: true },
@@ -64,9 +56,9 @@ describe('Coupon Resolvers', () => {
     });
 
     it('should throw error when not authenticated', async () => {
-      await expect(
-        couponResolvers.Query.coupons(null, {}, mockContextNoToken)
-      ).rejects.toThrow(GraphQLError);
+      await expect(couponResolvers.Query.coupons(null, {}, mockContextNoToken)).rejects.toThrow(
+        GraphQLError
+      );
     });
   });
 
@@ -80,11 +72,7 @@ describe('Coupon Resolvers', () => {
 
       (couponClient.get as jest.Mock).mockResolvedValue(mockCoupon);
 
-      const result = await couponResolvers.Query.coupon(
-        null,
-        { id: '1' },
-        mockContext
-      );
+      const result = await couponResolvers.Query.coupon(null, { id: '1' }, mockContext);
 
       expect(result).toEqual(mockCoupon.data.data);
     });
@@ -106,10 +94,10 @@ describe('Coupon Resolvers', () => {
 
       (couponClient.post as jest.Mock).mockResolvedValue(mockValidation);
 
-      const result = await couponResolvers.Query.validateCoupon(
-        null,
-        { code: 'SAVE10', orderTotal: 100 }
-      );
+      const result = await couponResolvers.Query.validateCoupon(null, {
+        code: 'SAVE10',
+        orderTotal: 100,
+      });
 
       expect(result.valid).toBe(true);
       expect(result.discount).toBe(15);
@@ -121,10 +109,10 @@ describe('Coupon Resolvers', () => {
         response: { data: { message: 'Coupon expired' } },
       });
 
-      const result = await couponResolvers.Query.validateCoupon(
-        null,
-        { code: 'EXPIRED', orderTotal: 100 }
-      );
+      const result = await couponResolvers.Query.validateCoupon(null, {
+        code: 'EXPIRED',
+        orderTotal: 100,
+      });
 
       expect(result.valid).toBe(false);
       expect(result.message).toBe('Coupon expired');
@@ -136,10 +124,10 @@ describe('Coupon Resolvers', () => {
         data: {},
       });
 
-      const result = await couponResolvers.Query.validateCoupon(
-        null,
-        { code: 'TEST', orderTotal: 100 }
-      );
+      const result = await couponResolvers.Query.validateCoupon(null, {
+        code: 'TEST',
+        orderTotal: 100,
+      });
 
       expect(result.valid).toBe(true);
       expect(result.discount).toBe(0);
@@ -207,11 +195,7 @@ describe('Coupon Resolvers', () => {
 
       (couponClient.post as jest.Mock).mockResolvedValue(mockCoupon);
 
-      const result = await couponResolvers.Mutation.createCoupon(
-        null,
-        { input },
-        mockContext
-      );
+      const result = await couponResolvers.Mutation.createCoupon(null, { input }, mockContext);
 
       expect(result).toEqual(mockCoupon.data.data);
     });

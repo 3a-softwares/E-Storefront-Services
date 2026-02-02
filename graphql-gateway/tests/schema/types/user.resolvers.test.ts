@@ -59,9 +59,9 @@ describe('User Resolvers', () => {
     });
 
     it('should throw error when not authenticated', async () => {
-      await expect(
-        userResolvers.Query.me(null, {}, mockContextNoToken)
-      ).rejects.toThrow('Not authenticated');
+      await expect(userResolvers.Query.me(null, {}, mockContextNoToken)).rejects.toThrow(
+        'Not authenticated'
+      );
     });
   });
 
@@ -81,11 +81,7 @@ describe('User Resolvers', () => {
 
       (authClient.get as jest.Mock).mockResolvedValue(mockUsers);
 
-      const result = await userResolvers.Query.users(
-        null,
-        { page: 1, limit: 10 },
-        mockContext
-      );
+      const result = await userResolvers.Query.users(null, { page: 1, limit: 10 }, mockContext);
 
       expect(result).toEqual(mockUsers.data.data);
     });
@@ -93,11 +89,7 @@ describe('User Resolvers', () => {
     it('should filter by search and role', async () => {
       (authClient.get as jest.Mock).mockResolvedValue({ data: { data: { users: [] } } });
 
-      await userResolvers.Query.users(
-        null,
-        { search: 'test', role: 'seller' },
-        mockContext
-      );
+      await userResolvers.Query.users(null, { search: 'test', role: 'seller' }, mockContext);
 
       expect(authClient.get).toHaveBeenCalledWith('/api/users', {
         params: { search: 'test', role: 'seller' },
@@ -167,10 +159,7 @@ describe('User Resolvers', () => {
         },
       });
 
-      const result = await userResolvers.Query.validateResetToken(
-        null,
-        { token: 'valid-token' }
-      );
+      const result = await userResolvers.Query.validateResetToken(null, { token: 'valid-token' });
 
       expect(result).toEqual({
         success: true,
@@ -184,10 +173,7 @@ describe('User Resolvers', () => {
         response: { data: { message: 'Token expired' } },
       });
 
-      const result = await userResolvers.Query.validateResetToken(
-        null,
-        { token: 'invalid-token' }
-      );
+      const result = await userResolvers.Query.validateResetToken(null, { token: 'invalid-token' });
 
       expect(result.success).toBe(false);
       expect(result.message).toBe('Token expired');
@@ -204,10 +190,7 @@ describe('User Resolvers', () => {
         },
       });
 
-      const result = await userResolvers.Query.validateEmailToken(
-        null,
-        { token: 'valid-token' }
-      );
+      const result = await userResolvers.Query.validateEmailToken(null, { token: 'valid-token' });
 
       expect(result).toEqual({
         success: true,
@@ -260,10 +243,9 @@ describe('User Resolvers', () => {
 
       (authClient.post as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await userResolvers.Mutation.login(
-        null,
-        { input: { email: 'test@example.com', password: 'password' } }
-      );
+      const result = await userResolvers.Mutation.login(null, {
+        input: { email: 'test@example.com', password: 'password' },
+      });
 
       expect(result.user.email).toBe('test@example.com');
       expect(result.accessToken).toBe('access-token');
@@ -275,10 +257,9 @@ describe('User Resolvers', () => {
       });
 
       await expect(
-        userResolvers.Mutation.login(
-          null,
-          { input: { email: 'test@example.com', password: 'wrong' } }
-        )
+        userResolvers.Mutation.login(null, {
+          input: { email: 'test@example.com', password: 'wrong' },
+        })
       ).rejects.toThrow('Invalid credentials');
     });
 
@@ -288,10 +269,9 @@ describe('User Resolvers', () => {
       });
 
       await expect(
-        userResolvers.Mutation.login(
-          null,
-          { input: { email: 'test@example.com', password: 'password' } }
-        )
+        userResolvers.Mutation.login(null, {
+          input: { email: 'test@example.com', password: 'password' },
+        })
       ).rejects.toThrow('Account locked');
     });
   });
@@ -314,10 +294,9 @@ describe('User Resolvers', () => {
 
       (authClient.post as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await userResolvers.Mutation.register(
-        null,
-        { input: { email: 'new@example.com', password: 'password', name: 'New User' } }
-      );
+      const result = await userResolvers.Mutation.register(null, {
+        input: { email: 'new@example.com', password: 'password', name: 'New User' },
+      });
 
       expect(result.user.email).toBe('new@example.com');
     });
@@ -328,10 +307,9 @@ describe('User Resolvers', () => {
       });
 
       await expect(
-        userResolvers.Mutation.register(
-          null,
-          { input: { email: 'existing@example.com', password: 'password' } }
-        )
+        userResolvers.Mutation.register(null, {
+          input: { email: 'existing@example.com', password: 'password' },
+        })
       ).rejects.toThrow('Email already exists');
     });
   });
@@ -354,10 +332,9 @@ describe('User Resolvers', () => {
 
       (authClient.post as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await userResolvers.Mutation.googleAuth(
-        null,
-        { input: { idToken: 'google-id-token' } }
-      );
+      const result = await userResolvers.Mutation.googleAuth(null, {
+        input: { idToken: 'google-id-token' },
+      });
 
       expect(result.user.email).toBe('google@example.com');
     });

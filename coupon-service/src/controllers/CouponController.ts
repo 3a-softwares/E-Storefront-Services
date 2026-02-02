@@ -63,10 +63,18 @@ export const getCouponById = async (req: Request, res: Response) => {
         message: 'Coupon not found',
       });
     }
-    Logger.debug('Coupon fetched successfully', { id: req.params.id, code: coupon.code }, 'CouponController');
+    Logger.debug(
+      'Coupon fetched successfully',
+      { id: req.params.id, code: coupon.code },
+      'CouponController'
+    );
     return res.json({ success: true, data: coupon });
   } catch (error: any) {
-    Logger.error('Get coupon by id error', { id: req.params.id, error: error.message }, 'CouponController');
+    Logger.error(
+      'Get coupon by id error',
+      { id: req.params.id, error: error.message },
+      'CouponController'
+    );
     return res.status(500).json({
       success: false,
       message: 'Failed to get coupon',
@@ -95,7 +103,11 @@ export const getCouponByCode = async (req: Request, res: Response) => {
 
     // Check usage limit
     if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) {
-      Logger.warn('Coupon usage limit reached', { code, usageCount: coupon.usageCount, usageLimit: coupon.usageLimit }, 'CouponController');
+      Logger.warn(
+        'Coupon usage limit reached',
+        { code, usageCount: coupon.usageCount, usageLimit: coupon.usageLimit },
+        'CouponController'
+      );
       return res.status(400).json({
         success: false,
         message: 'Coupon usage limit reached',
@@ -105,7 +117,11 @@ export const getCouponByCode = async (req: Request, res: Response) => {
     Logger.debug('Coupon fetched by code successfully', { code }, 'CouponController');
     return res.json({ success: true, data: coupon });
   } catch (error: any) {
-    Logger.error('Get coupon by code error', { code: req.params.code, error: error.message }, 'CouponController');
+    Logger.error(
+      'Get coupon by code error',
+      { code: req.params.code, error: error.message },
+      'CouponController'
+    );
     return res.status(500).json({
       success: false,
       message: 'Failed to get coupon',
@@ -141,7 +157,11 @@ export const validateCoupon = async (req: Request, res: Response) => {
 
     const now = new Date();
     if (now < coupon.validFrom) {
-      Logger.warn('Coupon validation failed - not yet valid', { code, validFrom: coupon.validFrom }, 'CouponController');
+      Logger.warn(
+        'Coupon validation failed - not yet valid',
+        { code, validFrom: coupon.validFrom },
+        'CouponController'
+      );
       return res.status(400).json({
         success: false,
         message: 'Coupon is not yet valid',
@@ -149,7 +169,11 @@ export const validateCoupon = async (req: Request, res: Response) => {
     }
 
     if (now > coupon.validTo) {
-      Logger.warn('Coupon validation failed - expired', { code, validTo: coupon.validTo }, 'CouponController');
+      Logger.warn(
+        'Coupon validation failed - expired',
+        { code, validTo: coupon.validTo },
+        'CouponController'
+      );
       return res.status(400).json({
         success: false,
         message: 'Coupon has expired',
@@ -165,7 +189,11 @@ export const validateCoupon = async (req: Request, res: Response) => {
     }
 
     if (coupon.minPurchase && orderTotal < coupon.minPurchase) {
-      Logger.warn('Coupon validation failed - minimum purchase not met', { code, orderTotal, minPurchase: coupon.minPurchase }, 'CouponController');
+      Logger.warn(
+        'Coupon validation failed - minimum purchase not met',
+        { code, orderTotal, minPurchase: coupon.minPurchase },
+        'CouponController'
+      );
       return res.status(400).json({
         success: false,
         message: `Minimum purchase of $${coupon.minPurchase} required`,
@@ -183,7 +211,11 @@ export const validateCoupon = async (req: Request, res: Response) => {
       discount = coupon.discount;
     }
 
-    Logger.info('Coupon validated successfully', { code, discount, orderTotal }, 'CouponController');
+    Logger.info(
+      'Coupon validated successfully',
+      { code, discount, orderTotal },
+      'CouponController'
+    );
     return res.json({
       success: true,
       data: {
@@ -193,7 +225,11 @@ export const validateCoupon = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    Logger.error('Validate coupon error', { code: req.body.code, error: error.message }, 'CouponController');
+    Logger.error(
+      'Validate coupon error',
+      { code: req.body.code, error: error.message },
+      'CouponController'
+    );
     return res.status(500).json({
       success: false,
       message: 'Failed to validate coupon',
@@ -229,14 +265,22 @@ export const applyCoupon = async (req: Request, res: Response) => {
       });
     }
 
-    Logger.info('Coupon applied successfully', { code, usageCount: coupon.usageCount }, 'CouponController');
+    Logger.info(
+      'Coupon applied successfully',
+      { code, usageCount: coupon.usageCount },
+      'CouponController'
+    );
     return res.json({
       success: true,
       message: 'Coupon applied successfully',
       data: coupon,
     });
   } catch (error: any) {
-    Logger.error('Apply coupon error', { code: req.body.code, error: error.message }, 'CouponController');
+    Logger.error(
+      'Apply coupon error',
+      { code: req.body.code, error: error.message },
+      'CouponController'
+    );
     return res.status(500).json({
       success: false,
       message: 'Failed to apply coupon',
@@ -255,14 +299,22 @@ export const createCoupon = async (req: Request, res: Response) => {
     const coupon = new Coupon(couponData);
     await coupon.save();
 
-    Logger.info('Coupon created successfully', { id: coupon._id, code: coupon.code }, 'CouponController');
+    Logger.info(
+      'Coupon created successfully',
+      { id: coupon._id, code: coupon.code },
+      'CouponController'
+    );
     return res.status(201).json({
       success: true,
       message: 'Coupon created successfully',
       data: coupon,
     });
   } catch (error: any) {
-    Logger.error('Create coupon error', { code: req.body.code, error: error.message }, 'CouponController');
+    Logger.error(
+      'Create coupon error',
+      { code: req.body.code, error: error.message },
+      'CouponController'
+    );
     return res.status(400).json({
       success: false,
       message: error.code === 11000 ? 'Coupon code already exists' : error.message,
@@ -290,14 +342,22 @@ export const updateCoupon = async (req: Request, res: Response) => {
       });
     }
 
-    Logger.info('Coupon updated successfully', { id: req.params.id, code: coupon.code }, 'CouponController');
+    Logger.info(
+      'Coupon updated successfully',
+      { id: req.params.id, code: coupon.code },
+      'CouponController'
+    );
     return res.json({
       success: true,
       message: 'Coupon updated successfully',
       data: coupon,
     });
   } catch (error: any) {
-    Logger.error('Update coupon error', { id: req.params.id, error: error.message }, 'CouponController');
+    Logger.error(
+      'Update coupon error',
+      { id: req.params.id, error: error.message },
+      'CouponController'
+    );
     return res.status(400).json({
       success: false,
       message: error.message,
@@ -317,13 +377,21 @@ export const deleteCoupon = async (req: Request, res: Response) => {
       });
     }
 
-    Logger.info('Coupon deleted successfully', { id: req.params.id, code: coupon.code }, 'CouponController');
+    Logger.info(
+      'Coupon deleted successfully',
+      { id: req.params.id, code: coupon.code },
+      'CouponController'
+    );
     return res.json({
       success: true,
       message: 'Coupon deleted successfully',
     });
   } catch (error: any) {
-    Logger.error('Delete coupon error', { id: req.params.id, error: error.message }, 'CouponController');
+    Logger.error(
+      'Delete coupon error',
+      { id: req.params.id, error: error.message },
+      'CouponController'
+    );
     return res.status(400).json({
       success: false,
       message: error.message,

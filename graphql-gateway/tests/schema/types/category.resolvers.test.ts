@@ -45,9 +45,7 @@ describe('Category Resolvers', () => {
 
       await categoryResolvers.Query.categories(null, { filter: { search: 'elec' } });
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining('search=elec')
-      );
+      expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('search=elec'));
     });
 
     it('should filter by isActive', async () => {
@@ -60,9 +58,7 @@ describe('Category Resolvers', () => {
 
       await categoryResolvers.Query.categories(null, { filter: { isActive: true } });
 
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining('isActive=true')
-      );
+      expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('isActive=true'));
     });
 
     it('should return empty data on error', async () => {
@@ -153,10 +149,9 @@ describe('Category Resolvers', () => {
         response: { data: { message: 'Category already exists' } },
       });
 
-      const result = await categoryResolvers.Mutation.createCategory(
-        null,
-        { input: { name: 'Existing' } }
-      );
+      const result = await categoryResolvers.Mutation.createCategory(null, {
+        input: { name: 'Existing' },
+      });
 
       expect(result.success).toBe(false);
       expect(result.message).toBe('Category already exists');
@@ -175,10 +170,7 @@ describe('Category Resolvers', () => {
 
       mockedAxios.put.mockResolvedValue(mockResponse);
 
-      const result = await categoryResolvers.Mutation.updateCategory(
-        null,
-        { id: 'cat123', input }
-      );
+      const result = await categoryResolvers.Mutation.updateCategory(null, { id: 'cat123', input });
 
       expect(result).toEqual(mockResponse.data);
     });
@@ -188,10 +180,10 @@ describe('Category Resolvers', () => {
         response: { data: { message: 'Category not found' } },
       });
 
-      const result = await categoryResolvers.Mutation.updateCategory(
-        null,
-        { id: 'nonexistent', input: {} }
-      );
+      const result = await categoryResolvers.Mutation.updateCategory(null, {
+        id: 'nonexistent',
+        input: {},
+      });
 
       expect(result.success).toBe(false);
     });

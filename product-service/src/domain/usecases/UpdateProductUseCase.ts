@@ -41,9 +41,10 @@ export interface UpdateProductOutput {
   };
 }
 
-export class UpdateProductUseCase
-  implements UseCase<UpdateProductInput, UseCaseResult<UpdateProductOutput>>
-{
+export class UpdateProductUseCase implements UseCase<
+  UpdateProductInput,
+  UseCaseResult<UpdateProductOutput>
+> {
   constructor(private readonly productRepository: IProductRepository) {}
 
   async execute(input: UpdateProductInput): Promise<UseCaseResult<UpdateProductOutput>> {

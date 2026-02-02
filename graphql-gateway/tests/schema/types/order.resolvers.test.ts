@@ -38,11 +38,7 @@ describe('Order Resolvers', () => {
 
       (orderClient.get as jest.Mock).mockResolvedValue(mockOrders);
 
-      const result = await orderResolvers.Query.orders(
-        null,
-        { page: 1, limit: 10 },
-        mockContext
-      );
+      const result = await orderResolvers.Query.orders(null, { page: 1, limit: 10 }, mockContext);
 
       expect(result).toEqual(mockOrders.data.data);
     });
@@ -50,11 +46,7 @@ describe('Order Resolvers', () => {
     it('should filter orders by customerId', async () => {
       (orderClient.get as jest.Mock).mockResolvedValue({ data: { data: { orders: [] } } });
 
-      await orderResolvers.Query.orders(
-        null,
-        { customerId: 'customer123' },
-        mockContext
-      );
+      await orderResolvers.Query.orders(null, { customerId: 'customer123' }, mockContext);
 
       expect(orderClient.get).toHaveBeenCalledWith('/api/orders', {
         params: expect.objectContaining({ customerId: 'customer123' }),
@@ -63,9 +55,9 @@ describe('Order Resolvers', () => {
     });
 
     it('should throw error when not authenticated', async () => {
-      await expect(
-        orderResolvers.Query.orders(null, {}, mockContextNoToken)
-      ).rejects.toThrow(GraphQLError);
+      await expect(orderResolvers.Query.orders(null, {}, mockContextNoToken)).rejects.toThrow(
+        GraphQLError
+      );
     });
   });
 
@@ -225,11 +217,7 @@ describe('Order Resolvers', () => {
 
       (orderClient.post as jest.Mock).mockResolvedValue(mockOrder);
 
-      const result = await orderResolvers.Mutation.createOrder(
-        null,
-        { input },
-        mockContext
-      );
+      const result = await orderResolvers.Mutation.createOrder(null, { input }, mockContext);
 
       expect(result.order).toEqual({ _id: 'order123', total: 200 });
       expect(result.orderCount).toBe(1);
@@ -251,11 +239,7 @@ describe('Order Resolvers', () => {
 
       (orderClient.post as jest.Mock).mockResolvedValue(mockOrder);
 
-      const result = await orderResolvers.Mutation.createOrder(
-        null,
-        { input },
-        mockContext
-      );
+      const result = await orderResolvers.Mutation.createOrder(null, { input }, mockContext);
 
       expect(result.orders).toHaveLength(2);
       expect(result.orderCount).toBe(2);

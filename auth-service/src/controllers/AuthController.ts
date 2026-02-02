@@ -266,7 +266,10 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 
     Logger.info('Updating user profile', { userId, name, phone }, 'Auth');
 
-    const user = await User.findByIdAndUpdate(userId, updateData, { new: true, runValidators: true });
+    const user = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!user) {
       Logger.warn('Profile update failed - user not found', { userId }, 'Auth');
@@ -974,15 +977,13 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
 
     try {
       // Verify the ID token using Google's tokeninfo endpoint
-      const response = await fetch(
-        `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`
-      );
+      const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
 
       if (!response.ok) {
         throw new Error('Invalid Google token');
       }
 
-      const tokenInfo:any = await response.json();
+      const tokenInfo: any = await response.json();
 
       // Verify the audience (client ID)
       const expectedClientId = process.env.GOOGLE_CLIENT_ID;
@@ -1023,7 +1024,11 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
 
       // Check if account is active
       if (!user.isActive) {
-        Logger.warn('Google OAuth failed - account deactivated', { email: googleUserInfo.email }, 'Auth');
+        Logger.warn(
+          'Google OAuth failed - account deactivated',
+          { email: googleUserInfo.email },
+          'Auth'
+        );
         res.status(403).json({
           success: false,
           message: 'Account is deactivated. Please contact support.',

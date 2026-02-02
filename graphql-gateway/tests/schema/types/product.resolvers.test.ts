@@ -66,11 +66,7 @@ describe('Product Resolvers', () => {
 
       (productClient.get as jest.Mock).mockResolvedValue(mockProducts);
 
-      await productResolvers.Query.products(
-        null,
-        { search: 'Test' },
-        mockContext
-      );
+      await productResolvers.Query.products(null, { search: 'Test' }, mockContext);
 
       expect(productClient.get).toHaveBeenCalledWith('/api/products', {
         params: expect.objectContaining({ search: 'Test' }),
@@ -80,11 +76,7 @@ describe('Product Resolvers', () => {
     it('should filter products by category', async () => {
       (productClient.get as jest.Mock).mockResolvedValue({ data: { data: { products: [] } } });
 
-      await productResolvers.Query.products(
-        null,
-        { category: 'electronics' },
-        mockContext
-      );
+      await productResolvers.Query.products(null, { category: 'electronics' }, mockContext);
 
       expect(productClient.get).toHaveBeenCalledWith('/api/products', {
         params: expect.objectContaining({ category: 'electronics' }),
@@ -94,11 +86,7 @@ describe('Product Resolvers', () => {
     it('should filter products by price range', async () => {
       (productClient.get as jest.Mock).mockResolvedValue({ data: { data: { products: [] } } });
 
-      await productResolvers.Query.products(
-        null,
-        { minPrice: 100, maxPrice: 500 },
-        mockContext
-      );
+      await productResolvers.Query.products(null, { minPrice: 100, maxPrice: 500 }, mockContext);
 
       expect(productClient.get).toHaveBeenCalledWith('/api/products', {
         params: expect.objectContaining({ minPrice: 100, maxPrice: 500 }),
@@ -108,11 +96,7 @@ describe('Product Resolvers', () => {
     it('should sort featured products by reviewCount descending', async () => {
       (productClient.get as jest.Mock).mockResolvedValue({ data: { data: { products: [] } } });
 
-      await productResolvers.Query.products(
-        null,
-        { featured: true },
-        mockContext
-      );
+      await productResolvers.Query.products(null, { featured: true }, mockContext);
 
       expect(productClient.get).toHaveBeenCalledWith('/api/products', {
         params: expect.objectContaining({ sortBy: 'reviewCount', sortOrder: 'desc' }),
@@ -234,18 +218,10 @@ describe('Product Resolvers', () => {
 
       (productClient.post as jest.Mock).mockResolvedValue(mockProduct);
 
-      const result = await productResolvers.Mutation.createProduct(
-        null,
-        { input },
-        mockContext
-      );
+      const result = await productResolvers.Mutation.createProduct(null, { input }, mockContext);
 
       expect(result).toEqual(mockProduct.data.data.product);
-      expect(productClient.post).toHaveBeenCalledWith(
-        '/api/products',
-        input,
-        expect.any(Object)
-      );
+      expect(productClient.post).toHaveBeenCalledWith('/api/products', input, expect.any(Object));
     });
 
     it('should throw error when not authenticated', async () => {
@@ -293,7 +269,10 @@ describe('Product Resolvers', () => {
       );
 
       expect(result).toBe(true);
-      expect(productClient.delete).toHaveBeenCalledWith('/api/products/product123', expect.any(Object));
+      expect(productClient.delete).toHaveBeenCalledWith(
+        '/api/products/product123',
+        expect.any(Object)
+      );
     });
 
     it('should throw error when not authenticated', async () => {

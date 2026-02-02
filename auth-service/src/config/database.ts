@@ -1,5 +1,3 @@
-
-
 import mongoose from 'mongoose';
 import { Logger } from '@3asoftwares/utils/server';
 import { DATABASE_CONFIG } from '@3asoftwares/utils';

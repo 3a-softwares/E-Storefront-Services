@@ -14,7 +14,7 @@ process.env.NODE_ENV = 'test';
 jest.setTimeout(10000);
 
 // Global teardown
-afterAll(async () => {
+afterAll(() => {
   // Clean up any remaining connections
   jest.clearAllMocks();
 });

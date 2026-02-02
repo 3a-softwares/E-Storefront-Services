@@ -21,7 +21,11 @@ export const getAllCategories = async (req: Request, res: Response): Promise<voi
     }
 
     const categories = await Category.find(query).sort({ name: 1 });
-    Logger.debug(`Fetched ${categories.length} categories`, { search, isActive }, 'CategoryController');
+    Logger.debug(
+      `Fetched ${categories.length} categories`,
+      { search, isActive },
+      'CategoryController'
+    );
 
     res.status(200).json({
       success: true,
@@ -54,13 +58,21 @@ export const getCategoryById = async (req: Request, res: Response): Promise<void
       return;
     }
 
-    Logger.debug('Category fetched successfully', { id, name: category.name }, 'CategoryController');
+    Logger.debug(
+      'Category fetched successfully',
+      { id, name: category.name },
+      'CategoryController'
+    );
     res.status(200).json({
       success: true,
       data: category,
     });
   } catch (error: any) {
-    Logger.error('Get category by id error', { id: req.params.id, error: error.message }, 'CategoryController');
+    Logger.error(
+      'Get category by id error',
+      { id: req.params.id, error: error.message },
+      'CategoryController'
+    );
     res.status(500).json({
       success: false,
       message: 'Failed to fetch category',
@@ -93,7 +105,11 @@ export const createCategory = async (req: Request, res: Response): Promise<void>
     });
 
     await category.save();
-    Logger.info('Category created successfully', { id: category._id, name: category.name }, 'CategoryController');
+    Logger.info(
+      'Category created successfully',
+      { id: category._id, name: category.name },
+      'CategoryController'
+    );
 
     res.status(201).json({
       success: true,
@@ -101,7 +117,11 @@ export const createCategory = async (req: Request, res: Response): Promise<void>
       data: category,
     });
   } catch (error: any) {
-    Logger.error('Create category error', { name: req.body.name, error: error.message }, 'CategoryController');
+    Logger.error(
+      'Create category error',
+      { name: req.body.name, error: error.message },
+      'CategoryController'
+    );
     res.status(400).json({
       success: false,
       message: 'Failed to create category',
@@ -153,7 +173,11 @@ export const updateCategory = async (req: Request, res: Response): Promise<void>
       data: category,
     });
   } catch (error: any) {
-    Logger.error('Update category error', { id: req.params.id, error: error.message }, 'CategoryController');
+    Logger.error(
+      'Update category error',
+      { id: req.params.id, error: error.message },
+      'CategoryController'
+    );
     res.status(400).json({
       success: false,
       message: 'Failed to update category',
@@ -183,7 +207,11 @@ export const deleteCategory = async (req: Request, res: Response): Promise<void>
       message: 'Category deleted successfully',
     });
   } catch (error: any) {
-    Logger.error('Delete category error', { id: req.params.id, error: error.message }, 'CategoryController');
+    Logger.error(
+      'Delete category error',
+      { id: req.params.id, error: error.message },
+      'CategoryController'
+    );
     res.status(500).json({
       success: false,
       message: 'Failed to delete category',

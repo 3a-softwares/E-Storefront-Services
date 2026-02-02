@@ -17,9 +17,10 @@ export interface DeleteProductOutput {
   message: string;
 }
 
-export class DeleteProductUseCase
-  implements UseCase<DeleteProductInput, UseCaseResult<DeleteProductOutput>>
-{
+export class DeleteProductUseCase implements UseCase<
+  DeleteProductInput,
+  UseCaseResult<DeleteProductOutput>
+> {
   constructor(private readonly productRepository: IProductRepository) {}
 
   async execute(input: DeleteProductInput): Promise<UseCaseResult<DeleteProductOutput>> {

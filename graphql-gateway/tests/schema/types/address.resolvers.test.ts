@@ -1,5 +1,5 @@
 import { addressResolvers } from '../../../src/schema/types/address';
-import { authClient, addAuthHeader } from '../../../src/clients/serviceClients';
+import { authClient } from '../../../src/clients/serviceClients';
 
 // Mock the service clients
 jest.mock('../../../src/clients/serviceClients', () => ({
@@ -38,11 +38,7 @@ describe('Address Resolvers', () => {
 
       (authClient.get as jest.Mock).mockResolvedValue(mockAddresses);
 
-      const result = await addressResolvers.Query.myAddresses(
-        null,
-        {},
-        mockContext
-      );
+      const result = await addressResolvers.Query.myAddresses(null, {}, mockContext);
 
       expect(result.addresses).toHaveLength(2);
       expect(authClient.get).toHaveBeenCalledWith('/api/addresses', expect.any(Object));
@@ -59,11 +55,7 @@ describe('Address Resolvers', () => {
         data: { data: {} },
       });
 
-      const result = await addressResolvers.Query.myAddresses(
-        null,
-        {},
-        mockContext
-      );
+      const result = await addressResolvers.Query.myAddresses(null, {}, mockContext);
 
       expect(result.addresses).toEqual([]);
     });
@@ -103,11 +95,7 @@ describe('Address Resolvers', () => {
 
     it('should throw error when not authenticated', async () => {
       await expect(
-        addressResolvers.Mutation.addAddress(
-          null,
-          { input: addressInput },
-          mockContextNoToken
-        )
+        addressResolvers.Mutation.addAddress(null, { input: addressInput }, mockContextNoToken)
       ).rejects.toThrow('Not authenticated');
     });
 
@@ -210,11 +198,7 @@ describe('Address Resolvers', () => {
 
     it('should throw error when not authenticated', async () => {
       await expect(
-        addressResolvers.Mutation.deleteAddress(
-          null,
-          { id: 'address123' },
-          mockContextNoToken
-        )
+        addressResolvers.Mutation.deleteAddress(null, { id: 'address123' }, mockContextNoToken)
       ).rejects.toThrow('Not authenticated');
     });
   });
@@ -243,11 +227,7 @@ describe('Address Resolvers', () => {
 
     it('should throw error when not authenticated', async () => {
       await expect(
-        addressResolvers.Mutation.setDefaultAddress(
-          null,
-          { id: 'address123' },
-          mockContextNoToken
-        )
+        addressResolvers.Mutation.setDefaultAddress(null, { id: 'address123' }, mockContextNoToken)
       ).rejects.toThrow('Not authenticated');
     });
 

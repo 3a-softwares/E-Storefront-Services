@@ -1,5 +1,3 @@
-
-
 import jwt from 'jsonwebtoken';
 import { UserRole } from '@3asoftwares/types';
 

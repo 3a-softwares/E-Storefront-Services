@@ -1,1 +1,2 @@
-export { Ticket, ITicket, TicketCategory, TicketPriority, TicketStatus, IComment } from './Ticket';
+export { Ticket, TicketCategory, TicketPriority, TicketStatus } from './Ticket';
+export type { ITicket, IComment } from './Ticket';

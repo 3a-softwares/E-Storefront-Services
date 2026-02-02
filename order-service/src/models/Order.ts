@@ -1,5 +1,3 @@
-
-
 import mongoose, { Document, Schema } from 'mongoose';
 import { OrderStatus, PaymentStatus } from '@3asoftwares/types';
 
