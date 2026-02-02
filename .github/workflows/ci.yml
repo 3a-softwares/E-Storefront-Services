@@ -21,7 +21,6 @@ env:
 jobs:
   # ===================== DETECT CHANGES =====================
   detect-changes:
-    name: Detect Changed Services
     runs-on: ubuntu-latest
     outputs:
       auth: ${{ steps.filter.outputs.auth }}
@@ -33,7 +32,6 @@ jobs:
       ticket: ${{ steps.filter.outputs.ticket }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -55,7 +53,6 @@ jobs:
 
   # ===================== LINT =====================
   lint:
-    name: Lint
     runs-on: ubuntu-latest
     needs: detect-changes
     steps:
@@ -69,7 +66,6 @@ jobs:
 
   # ===================== FORMAT =====================
   format:
-    name: Format Check
     runs-on: ubuntu-latest
     needs: lint
     steps:
@@ -83,28 +79,27 @@ jobs:
 
   # ===================== BUILD =====================
   build:
-    name: Build (${{ matrix.service }})
     runs-on: ubuntu-latest
     needs: [format, detect-changes]
     strategy:
       fail-fast: false
       matrix:
-        service:
-          - auth-service
-          - category-service
-          - coupon-service
-          - graphql-gateway
-          - order-service
-          - product-service
-          - ticket-service
-    if: |
-      (matrix.service == 'auth-service' && needs.detect-changes.outputs.auth == 'true') ||
-      (matrix.service == 'category-service' && needs.detect-changes.outputs.category == 'true') ||
-      (matrix.service == 'coupon-service' && needs.detect-changes.outputs.coupon == 'true') ||
-      (matrix.service == 'graphql-gateway' && needs.detect-changes.outputs.graphql == 'true') ||
-      (matrix.service == 'order-service' && needs.detect-changes.outputs.order == 'true') ||
-      (matrix.service == 'product-service' && needs.detect-changes.outputs.product == 'true') ||
-      (matrix.service == 'ticket-service' && needs.detect-changes.outputs.ticket == 'true')
+        include:
+          - service: auth-service
+            flag: auth
+          - service: category-service
+            flag: category
+          - service: coupon-service
+            flag: coupon
+          - service: graphql-gateway
+            flag: graphql
+          - service: order-service
+            flag: order
+          - service: product-service
+            flag: product
+          - service: ticket-service
+            flag: ticket
+    if: needs.detect-changes.outputs[matrix.flag] == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -116,28 +111,27 @@ jobs:
 
   # ===================== TEST =====================
   test:
-    name: Test (${{ matrix.service }})
     runs-on: ubuntu-latest
     needs: [build, detect-changes]
     strategy:
       fail-fast: false
       matrix:
-        service:
-          - auth-service
-          - category-service
-          - coupon-service
-          - graphql-gateway
-          - order-service
-          - product-service
-          - ticket-service
-    if: |
-      (matrix.service == 'auth-service' && needs.detect-changes.outputs.auth == 'true') ||
-      (matrix.service == 'category-service' && needs.detect-changes.outputs.category == 'true') ||
-      (matrix.service == 'coupon-service' && needs.detect-changes.outputs.coupon == 'true') ||
-      (matrix.service == 'graphql-gateway' && needs.detect-changes.outputs.graphql == 'true') ||
-      (matrix.service == 'order-service' && needs.detect-changes.outputs.order == 'true') ||
-      (matrix.service == 'product-service' && needs.detect-changes.outputs.product == 'true') ||
-      (matrix.service == 'ticket-service' && needs.detect-changes.outputs.ticket == 'true')
+        include:
+          - service: auth-service
+            flag: auth
+          - service: category-service
+            flag: category
+          - service: coupon-service
+            flag: coupon
+          - service: graphql-gateway
+            flag: graphql
+          - service: order-service
+            flag: order
+          - service: product-service
+            flag: product
+          - service: ticket-service
+            flag: ticket
+    if: needs.detect-changes.outputs[matrix.flag] == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -149,17 +143,8 @@ jobs:
 
   # ===================== SONARQUBE =====================
   sonarqube:
-    name: SonarQube
     runs-on: ubuntu-latest
-    needs: [test, detect-changes]
-    if: |
-      needs.detect-changes.outputs.auth == 'true' ||
-      needs.detect-changes.outputs.category == 'true' ||
-      needs.detect-changes.outputs.coupon == 'true' ||
-      needs.detect-changes.outputs.graphql == 'true' ||
-      needs.detect-changes.outputs.order == 'true' ||
-      needs.detect-changes.outputs.product == 'true' ||
-      needs.detect-changes.outputs.ticket == 'true'
+    needs: test
     steps:
       - uses: actions/checkout@v4
         with:
