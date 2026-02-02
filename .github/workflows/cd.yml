@@ -2,7 +2,7 @@ name: CD - Deploy to Vercel
 
 on:
   workflow_run:
-    workflows: ['CI - Lint, Format, Build, Test & Sonar']
+    workflows: CI Pipeline
     types:
       - completed
 
