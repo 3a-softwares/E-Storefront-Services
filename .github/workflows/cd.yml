@@ -25,6 +25,9 @@ jobs:
       ticket: ${{ steps.filter.outputs.ticket }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -68,6 +71,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: actions/setup-node@v4
         with:

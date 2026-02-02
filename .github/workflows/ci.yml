@@ -21,7 +21,7 @@ env:
 jobs:
   # ===================== DETECT CHANGES =====================
   detect-changes:
-    name: Detect Changes
+    name: Detect Changed Services
     runs-on: ubuntu-latest
     outputs:
       auth: ${{ steps.filter.outputs.auth }}
@@ -31,6 +31,7 @@ jobs:
       order: ${{ steps.filter.outputs.order }}
       product: ${{ steps.filter.outputs.product }}
       ticket: ${{ steps.filter.outputs.ticket }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -38,13 +39,20 @@ jobs:
         id: filter
         with:
           filters: |
-            auth: auth-service/**
-            category: category-service/**
-            coupon: coupon-service/**
-            graphql: graphql-gateway/**
-            order: order-service/**
-            product: product-service/**
-            ticket: ticket-service/**
+            auth:
+              - auth-service/**
+            category:
+              - category-service/**
+            coupon:
+              - coupon-service/**
+            graphql:
+              - graphql-gateway/**
+            order:
+              - order-service/**
+            product:
+              - product-service/**
+            ticket:
+              - ticket-service/**
 
   # ===================== LINT =====================
   lint:
