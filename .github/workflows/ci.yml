@@ -19,10 +19,45 @@ env:
   NODE_VERSION: 18
 
 jobs:
+  # ===================== DETECT CHANGES =====================
+  detect-changes:
+    name: Detect Changed Services
+    runs-on: ubuntu-latest
+    outputs:
+      auth: ${{ steps.filter.outputs.auth }}
+      category: ${{ steps.filter.outputs.category }}
+      coupon: ${{ steps.filter.outputs.coupon }}
+      graphql: ${{ steps.filter.outputs.graphql }}
+      order: ${{ steps.filter.outputs.order }}
+      product: ${{ steps.filter.outputs.product }}
+      ticket: ${{ steps.filter.outputs.ticket }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            auth:
+              - auth-service/**
+            category:
+              - category-service/**
+            coupon:
+              - coupon-service/**
+            graphql:
+              - graphql-gateway/**
+            order:
+              - order-service/**
+            product:
+              - product-service/**
+            ticket:
+              - ticket-service/**
+
   # ===================== LINT =====================
   lint:
     name: Lint (All Services)
     runs-on: ubuntu-latest
+    needs: detect-changes
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,7 +85,7 @@ jobs:
   build:
     name: Build (${{ matrix.service }})
     runs-on: ubuntu-latest
-    needs: format
+    needs: [format, detect-changes]
     strategy:
       fail-fast: false
       matrix:
@@ -62,6 +97,14 @@ jobs:
           - order-service
           - product-service
           - ticket-service
+    if: |
+      (matrix.service == 'auth-service' && needs.detect-changes.outputs.auth == 'true') ||
+      (matrix.service == 'category-service' && needs.detect-changes.outputs.category == 'true') ||
+      (matrix.service == 'coupon-service' && needs.detect-changes.outputs.coupon == 'true') ||
+      (matrix.service == 'graphql-gateway' && needs.detect-changes.outputs.graphql == 'true') ||
+      (matrix.service == 'order-service' && needs.detect-changes.outputs.order == 'true') ||
+      (matrix.service == 'product-service' && needs.detect-changes.outputs.product == 'true') ||
+      (matrix.service == 'ticket-service' && needs.detect-changes.outputs.ticket == 'true')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -75,7 +118,7 @@ jobs:
   test:
     name: Test (${{ matrix.service }})
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, detect-changes]
     strategy:
       fail-fast: false
       matrix:
@@ -87,6 +130,14 @@ jobs:
           - order-service
           - product-service
           - ticket-service
+    if: |
+      (matrix.service == 'auth-service' && needs.detect-changes.outputs.auth == 'true') ||
+      (matrix.service == 'category-service' && needs.detect-changes.outputs.category == 'true') ||
+      (matrix.service == 'coupon-service' && needs.detect-changes.outputs.coupon == 'true') ||
+      (matrix.service == 'graphql-gateway' && needs.detect-changes.outputs.graphql == 'true') ||
+      (matrix.service == 'order-service' && needs.detect-changes.outputs.order == 'true') ||
+      (matrix.service == 'product-service' && needs.detect-changes.outputs.product == 'true') ||
+      (matrix.service == 'ticket-service' && needs.detect-changes.outputs.ticket == 'true')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -100,7 +151,15 @@ jobs:
   sonarqube:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, detect-changes]
+    if: |
+      needs.detect-changes.outputs.auth == 'true' ||
+      needs.detect-changes.outputs.category == 'true' ||
+      needs.detect-changes.outputs.coupon == 'true' ||
+      needs.detect-changes.outputs.graphql == 'true' ||
+      needs.detect-changes.outputs.order == 'true' ||
+      needs.detect-changes.outputs.product == 'true' ||
+      needs.detect-changes.outputs.ticket == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -114,17 +173,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-  # ===================== SUMMARY =====================
-  summary:
-    name: CI Summary
-    runs-on: ubuntu-latest
-    needs: sonarqube
-    steps:
-      - run: |
-          echo "✅ Lint passed"
-          echo "✅ Format passed"
-          echo "✅ Build passed for all services"
-          echo "✅ Tests passed for all services"
-          echo "✅ SonarQube analysis completed"
+        with:
+          organization: 3a-softwares
+          projectKey: 3a-softwares_E-Storefront-Services
