@@ -42,15 +42,25 @@ jobs:
         working-directory: ./${{ matrix.service }}
         run: yarn build
 
+      - name: Resolve Vercel Project ID
+        id: vercel-project
+        run: |
+          case "${{ matrix.service }}" in
+            auth-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_AUTH_SERVICE }}" >> $GITHUB_ENV ;;
+            category-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_CATEGORY_SERVICE }}" >> $GITHUB_ENV ;;
+            coupon-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_COUPON_SERVICE }}" >> $GITHUB_ENV ;;
+            graphql-gateway) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_GRAPHQL_GATEWAY }}" >> $GITHUB_ENV ;;
+            order-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_ORDER_SERVICE }}" >> $GITHUB_ENV ;;
+            product-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_PRODUCT_SERVICE }}" >> $GITHUB_ENV ;;
+            ticket-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_TICKET_SERVICE }}" >> $GITHUB_ENV ;;
+          esac
+
       - name: Deploy to Vercel
         uses: BetaHuhn/deploy-to-vercel-action@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets[format(
-            'VERCEL_PROJECT_ID_{0}',
-            replace(upper(matrix.service), '-', '_')
-          )] }}
+          VERCEL_PROJECT_ID: ${{ env.PROJECT_ID }}
           WORKING_DIRECTORY: ${{ matrix.service }}
           PRODUCTION: true
