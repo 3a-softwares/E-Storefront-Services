@@ -1,0 +1,56 @@
+name: CD - Deploy to Vercel
+
+on:
+  workflow_run:
+    workflows: ["CI - Lint, Format, Build, Test & Sonar"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    name: Deploy - ${{ matrix.service }}
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        service:
+          - auth-service
+          - category-service
+          - coupon-service
+          - graphql-gateway
+          - order-service
+          - product-service
+          - ticket-service
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Verify Build
+        working-directory: ./${{ matrix.service }}
+        run: yarn build
+
+      - name: Deploy to Vercel
+        uses: BetaHuhn/deploy-to-vercel-action@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets[format(
+            'VERCEL_PROJECT_ID_{0}',
+            replace(upper(matrix.service), '-', '_')
+          )] }}
+          WORKING_DIRECTORY: ${{ matrix.service }}
+          PRODUCTION: true
