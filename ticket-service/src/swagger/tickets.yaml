@@ -1,0 +1,374 @@
+paths:
+  /api/tickets:
+    get:
+      tags:
+        - Tickets
+      summary: Get all tickets
+      description: Retrieve a list of all tickets with optional filters
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, in-progress, pending, resolved, closed]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, urgent]
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [technical, billing, general, feature, order, account]
+        - name: assignedTo
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Ticket'
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      pages:
+                        type: integer
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Tickets
+      summary: Create a new ticket
+      description: Create a new support ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicket'
+      responses:
+        '201':
+          description: Ticket created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Ticket created successfully
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/tickets/stats:
+    get:
+      tags:
+        - Tickets
+      summary: Get ticket statistics
+      description: Retrieve ticket statistics for dashboard
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      open:
+                        type: integer
+                      inProgress:
+                        type: integer
+                      resolved:
+                        type: integer
+                      closed:
+                        type: integer
+                      byPriority:
+                        type: object
+                      byCategory:
+                        type: object
+
+  /api/tickets/{id}:
+    get:
+      tags:
+        - Tickets
+      summary: Get ticket by ID
+      description: Retrieve a single ticket by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ticket ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Tickets
+      summary: Update a ticket
+      description: Update an existing ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                priority:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Ticket updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '404':
+          description: Ticket not found
+
+    delete:
+      tags:
+        - Tickets
+      summary: Delete a ticket
+      description: Delete a ticket by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ticket deleted successfully
+        '404':
+          description: Ticket not found
+
+  /api/tickets/{id}/assign:
+    patch:
+      tags:
+        - Tickets
+      summary: Assign ticket to support user
+      description: Assign a ticket to a support team member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - assignedTo
+              properties:
+                assignedTo:
+                  type: string
+                  description: Support user ID from auth-service
+                assignedToName:
+                  type: string
+                  description: Support user name for display
+      responses:
+        '200':
+          description: Ticket assigned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '400':
+          description: Invalid request
+        '404':
+          description: Ticket not found
+
+  /api/tickets/{id}/resolve:
+    patch:
+      tags:
+        - Tickets
+      summary: Resolve a ticket
+      description: Mark a ticket as resolved with resolution notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - resolution
+              properties:
+                resolution:
+                  type: string
+                  description: Resolution notes
+      responses:
+        '200':
+          description: Ticket resolved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '400':
+          description: Resolution notes required
+        '404':
+          description: Ticket not found
+
+  /api/tickets/{id}/comment:
+    post:
+      tags:
+        - Tickets
+      summary: Add comment to ticket
+      description: Add a comment or internal note to a ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: Comment message
+                isInternal:
+                  type: boolean
+                  default: false
+                  description: Whether this is an internal note
+      responses:
+        '200':
+          description: Comment added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+        '400':
+          description: Message is required
+        '404':
+          description: Ticket not found

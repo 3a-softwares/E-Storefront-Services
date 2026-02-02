@@ -1,0 +1,44 @@
+{
+  "name": "e-services",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend microservices monorepo - Auth, Category, Coupon, GraphQL Gateway, Order, Product, Ticket services",
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {
+    "dev:auth": "yarn workspace @3asoftwares/auth-service run dev",
+    "dev:category": "yarn workspace @3asoftwares/category-service run dev",
+    "dev:coupon": "yarn workspace @3asoftwares/coupon-service run dev",
+    "dev:gateway": "yarn workspace @3asoftwares/graphql-gateway run dev",
+    "dev:order": "yarn workspace @3asoftwares/order-service run dev",
+    "dev:product": "yarn workspace @3asoftwares/product-service run dev",
+    "dev:ticket": "yarn workspace @3asoftwares/ticket-service run dev",
+    "dev": "concurrently \"yarn dev:auth\" \"yarn dev:category\" \"yarn dev:coupon\" \"yarn dev:gateway\" \"yarn dev:order\" \"yarn dev:product\" \"yarn dev:ticket\" --names \"auth,category,coupon,gateway,order,product,ticket\" --prefix-colors \"magenta,green,yellow,cyan,blue,white,red\"",
+    "build:auth": "yarn workspace @3asoftwares/auth-service run build",
+    "build:category": "yarn workspace @3asoftwares/category-service run build",
+    "build:coupon": "yarn workspace @3asoftwares/coupon-service run build",
+    "build:gateway": "yarn workspace @3asoftwares/graphql-gateway run build",
+    "build:order": "yarn workspace @3asoftwares/order-service run build",
+    "build:product": "yarn workspace @3asoftwares/product-service run build",
+    "build:ticket": "yarn workspace @3asoftwares/ticket-service run build",
+    "build": "yarn build:auth && yarn build:category && yarn build:coupon && yarn build:gateway && yarn build:order && yarn build:product && yarn build:ticket",
+    "test:auth": "yarn workspace @3asoftwares/auth-service run test",
+    "test:category": "yarn workspace @3asoftwares/category-service run test",
+    "test:coupon": "yarn workspace @3asoftwares/coupon-service run test",
+    "test:gateway": "yarn workspace @3asoftwares/graphql-gateway run test",
+    "test:order": "yarn workspace @3asoftwares/order-service run test",
+    "test:product": "yarn workspace @3asoftwares/product-service run test",
+    "test:ticket": "yarn workspace @3asoftwares/ticket-service run test",
+    "test": "yarn test:auth && yarn test:category && yarn test:coupon && yarn test:gateway && yarn test:order && yarn test:product && yarn test:ticket",
+    "test:coverage": "yarn workspace @3asoftwares/auth-service run test -- --coverage && yarn workspace @3asoftwares/category-service run test -- --coverage && yarn workspace @3asoftwares/coupon-service run test -- --coverage && yarn workspace @3asoftwares/graphql-gateway run test -- --coverage && yarn workspace @3asoftwares/order-service run test -- --coverage && yarn workspace @3asoftwares/product-service run test -- --coverage && yarn workspace @3asoftwares/ticket-service run test -- --coverage"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=3.0.0"
+  }
+}
