@@ -55,7 +55,7 @@ jobs:
 
   # ===================== LINT =====================
   lint:
-    name: Lint (All Services)
+    name: Lint
     runs-on: ubuntu-latest
     needs: detect-changes
     steps:
@@ -149,7 +149,7 @@ jobs:
 
   # ===================== SONARQUBE =====================
   sonarqube:
-    name: SonarQube Analysis
+    name: SonarQube
     runs-on: ubuntu-latest
     needs: [test, detect-changes]
     if: |
