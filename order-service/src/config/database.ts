@@ -8,7 +8,7 @@ const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017/ecomme
 export const connectDatabase = async (): Promise<void> => {
   try {
     await mongoose.connect(MONGODB_URL);
-    Logger.info('MongoDB connected successfully', undefined, 'Database');
+    Logger.info('MongoDB connected successfully!', undefined, 'Database');
 
     mongoose.connection.on('error', (err) => {
       Logger.error('MongoDB connection error', { error: err.message }, 'Database');

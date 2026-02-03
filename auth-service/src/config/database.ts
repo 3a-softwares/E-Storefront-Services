@@ -12,7 +12,7 @@ export const connectDatabase = async (): Promise<void> => {
     };
 
     await mongoose.connect(MONGODB_URL, options);
-    Logger.info('MongoDB connected successfully', undefined, 'Database');
+    Logger.info('MongoDB connected successfully!', undefined, 'Database');
 
     mongoose.connection.on('error', (err) => {
       Logger.error('MongoDB connection error', err, 'Database');
