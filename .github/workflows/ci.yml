@@ -5,11 +5,9 @@ on:
     branches:
       - main
       - develop
-      - feature/**
   pull_request:
     branches:
       - main
-      - develop
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -162,7 +160,6 @@ jobs:
         if: matrix.should_run
         run: yarn workspace @3asoftwares/${{ matrix.service }} test -- --passWithNoTests
 
-  # ===================== SONARQUBE =====================
   sonarqube:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
