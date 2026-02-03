@@ -1,8 +1,8 @@
 {
   "version": 2,
   "framework": null,
-  "installCommand": "echo \"install handled by CI\"",
-  "buildCommand": "echo \"build handled by CI\"",
+  "installCommand": "yarn install",
+  "buildCommand": "yarn build",
   "outputDirectory": "dist",
   "git": {
     "deploymentEnabled": false
