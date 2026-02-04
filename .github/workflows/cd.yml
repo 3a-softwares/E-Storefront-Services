@@ -84,7 +84,7 @@ jobs:
       - run: yarn install --frozen-lockfile
 
       - name: Copy tsconfig.base.json
-        run: cp ../../tsconfig.base.json ./tsconfig.base.json
+        run: cp ../tsconfig.base.json ./tsconfig.base.json
         working-directory: ./${{ matrix.service }}
 
       - name: Verify Build
