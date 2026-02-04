@@ -1,6 +1,11 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "framework": null,
+=======
+  "builds": [{ "src": "dist/index.js", "use": "@vercel/node" }],
+  "routes": [{ "src": "/(.*)", "dest": "dist/index.js" }],
+>>>>>>> 11845ebc3d1ce307efdd374851fbc1f0c1f6c4aa
   "installCommand": "yarn install",
   "buildCommand": "yarn build",
   "outputDirectory": "dist",
