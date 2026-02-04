@@ -75,18 +75,18 @@ app.use((err: any, req: Request, res: Response, __: any) => {
 const startServer = async () => {
   try {
     await connectDatabase();
+    app.listen(PORT, () => {
+      Logger.info(`Ticket service running on port: ${PORT}`, undefined, 'Startup');
+      Logger.info(
+        `Swagger docs available at http://localhost:${PORT}/api-docs`,
+        undefined,
+        'Startup'
+      );
+    });
   } catch (error: any) {
-    Logger.error('Failed to connect to database', error, 'Startup');
+    Logger.error('Failed to start server', { error: error.message }, 'Startup');
+    process.exit(1);
   }
-
-  app.listen(PORT, () => {
-    Logger.info(`Ticket service running on port ${PORT}`, undefined, 'Startup');
-    Logger.info(
-      `Swagger docs available at http://localhost:${PORT}/api-docs`,
-      undefined,
-      'Startup'
-    );
-  });
 };
 
 process.on('SIGTERM', () => {

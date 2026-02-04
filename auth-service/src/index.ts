@@ -85,14 +85,9 @@ app.use((err: any, req: Request, res: Response, __: any) => {
 });
 
 const startServer = async () => {
-  try {
-    await connectDatabase();
-  } catch (error: any) {
-    Logger.error('Failed to connect to database', error, 'Startup');
-  }
-
+  await connectDatabase();
   app.listen(PORT, () => {
-    Logger.info(`Auth service running on port ${PORT}`, undefined, 'Startup');
+    Logger.info(`Coupon service running on port: ${PORT}`, undefined, 'Startup');
     Logger.info(
       `Swagger docs available at http://localhost:${PORT}/api-docs`,
       undefined,

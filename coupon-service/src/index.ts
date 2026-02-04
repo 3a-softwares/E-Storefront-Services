@@ -80,7 +80,7 @@ const startServer = async () => {
   try {
     await connectDatabase();
     app.listen(PORT, () => {
-      Logger.info(`Coupon service running on port ${PORT}`, undefined, 'Startup');
+      Logger.info(`Coupon service running on port: ${PORT}`, undefined, 'Startup');
       Logger.info(
         `Swagger docs available at http://localhost:${PORT}/api-docs`,
         undefined,
