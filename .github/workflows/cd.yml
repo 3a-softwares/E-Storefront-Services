@@ -6,11 +6,13 @@ permissions:
   statuses: write
 
 on:
-  workflow_run:
-    workflows:
-      - CI Pipeline
-    types:
-      - completed
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
 
 env:
   NODE_VERSION: 18
@@ -80,11 +82,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      # ✅ FIX: INSTALL VERCEL CLI
       - name: Install Vercel CLI
         run: npm install -g vercel
 
       - run: yarn install --frozen-lockfile
+
+      - name: Copy tsconfig.base.json
+        run: cp ../../tsconfig.base.json ./tsconfig.base.json
+        working-directory: ./${{ matrix.service }}
 
       - name: Verify Build
         working-directory: ./${{ matrix.service }}
