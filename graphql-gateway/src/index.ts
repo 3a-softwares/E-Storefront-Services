@@ -20,6 +20,8 @@ import { typeDefs } from './schema/typeDefs';
 import { resolvers } from './schema/resolvers';
 import { PORT_CONFIG, DEFAULT_CORS_ORIGINS } from '@3asoftwares/utils';
 import { Logger } from '@3asoftwares/utils/server';
+import healthRoutes from './routes/health.routes';
+import seedRoutes from './routes/seed.routes';
 
 // Configure logger for GraphQL Gateway
 Logger.configure({
@@ -90,7 +92,8 @@ async function startApolloServer() {
       success: true,
       message: 'GraphQL Gateway API',
       graphqlEndpoint: '/graphql',
-      healthEndpoint: '/health',
+      healthEndpoint: '/api/health',
+      seedEndpoint: '/api/seed',
       timestamp: new Date().toISOString(),
     });
   });
@@ -102,6 +105,49 @@ async function startApolloServer() {
       timestamp: new Date().toISOString(),
     });
   });
+
+  // Register API routes with /api prefix
+  app.use(
+    '/api',
+    cors<cors.CorsRequest>({
+      origin: process.env.ALLOWED_ORIGINS?.split(',') || DEFAULT_CORS_ORIGINS,
+      credentials: true,
+    }),
+    express.json(),
+    (req, res, next) => {
+      // Attach user context to request for authorization
+      const token = req.headers.authorization?.replace('Bearer ', '') || '';
+      let user = {};
+
+      if (token) {
+        try {
+          const decoded = jwt.decode(token) as {
+            userId: string;
+            email: string;
+            role: string;
+            name?: string;
+          } | null;
+          if (decoded) {
+            user = {
+              id: decoded.userId,
+              email: decoded.email,
+              role: decoded.role,
+              name: decoded.name || decoded.email,
+            };
+          }
+        } catch (error) {
+          // Token decode failed, user remains null
+        }
+      }
+
+      (req as any).user = user;
+      next();
+    }
+  );
+
+  // Register route handlers
+  app.use('/api', healthRoutes);
+  app.use('/api', seedRoutes);
 
   await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
 }

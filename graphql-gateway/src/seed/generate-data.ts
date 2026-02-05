@@ -20,6 +20,8 @@ import {
   TICKET_SUBJECTS,
   TICKET_DESCRIPTIONS,
   TICKET_RESOLUTIONS,
+  ID_PREFIX,
+  PRODUCTS_NAMES,
 } from './constants';
 
 interface GeneratedData {
@@ -34,9 +36,12 @@ interface GeneratedData {
 }
 
 const generateObjectId = (prefix: string, index: number): string => {
-  const hexIndex = index.toString(16).padStart(24 - prefix.length, '0');
-  return `${prefix}${hexIndex}`;
-};
+  const safePrefix = (prefix || '').toLowerCase().replace(/[^0-9a-f]/g, '');
+  const remaining = 24 - safePrefix.length;
+  const hexIndex = index.toString(16).padStart(Math.max(0, remaining), '0');
+  const id = `${safePrefix}${hexIndex}`.padStart(24, '0').slice(0, 24);
+  return id;
+};;
 
 const generateDate = (startYear: number, endYear: number): string => {
   const start = new Date(startYear, 0, 1).getTime();
@@ -80,7 +85,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     const firstName = FIRST_NAMES[i];
     const lastName = LAST_NAMES[i];
     users.push({
-      _id: generateObjectId('user_', userIndex),
+      _id: { $oid: generateObjectId(ID_PREFIX.USER, userIndex) },
       email: `admin${i + 1}@yopmail.com`,
       password: HASHED_PASSWORDS.ADMIN,
       name: `${firstName} ${lastName}`,
@@ -98,7 +103,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     const firstName = FIRST_NAMES[10 + i];
     const lastName = LAST_NAMES[10 + i];
     const seller = {
-      _id: generateObjectId('user_', userIndex),
+      _id: { $oid: generateObjectId(ID_PREFIX.USER, userIndex) },
       email: `seller${i + 1}@yopmail.com`,
       password: HASHED_PASSWORDS.SELLER,
       name: `${firstName} ${lastName}`,
@@ -118,7 +123,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     const firstName = FIRST_NAMES[(30 + i) % 50];
     const lastName = LAST_NAMES[(30 + i) % 50];
     const customer = {
-      _id: generateObjectId('user_', userIndex),
+      _id: { $oid: generateObjectId(ID_PREFIX.USER, userIndex) },
       email: `user${i + 1}@yopmail.com`,
       password: HASHED_PASSWORDS.CUSTOMER,
       name: `${firstName} ${lastName}`,
@@ -138,7 +143,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     const firstName = FIRST_NAMES[(i + 5) % 50];
     const lastName = LAST_NAMES[(i + 15) % 50];
     const supportUser = {
-      _id: generateObjectId('user_', userIndex),
+      _id: { $oid: generateObjectId(ID_PREFIX.USER, userIndex) },
       email: `support${i + 1}@yopmail.com`,
       password: HASHED_PASSWORDS.SUPPORT,
       name: `${firstName} ${lastName}`,
@@ -156,7 +161,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
   // Generate Categories
   CATEGORIES.forEach((cat, index) => {
     categories.push({
-      _id: generateObjectId('cat_', index + 1),
+      _id: { $oid: generateObjectId(ID_PREFIX.CATEGORY, index + 1) },
       name: cat.name,
       slug: slugify(cat.name),
       description: cat.description,
@@ -170,41 +175,15 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
 
   // Generate Products
   let productIndex = 1;
-  const productNames = [
-    'Laptop',
-    'Mouse',
-    'Keyboard',
-    'Monitor',
-    'Headphones',
-    'Speaker',
-    'Phone',
-    'Tablet',
-    'T-Shirt',
-    'Jeans',
-    'Jacket',
-    'Shoes',
-    'Hat',
-    'Scarf',
-    'Boots',
-    'Dress',
-    'Coffee Maker',
-    'Blender',
-    'Microwave',
-    'Toaster',
-    'Vacuum',
-    'Dishwasher',
-    'Refrigerator',
-    'Oven',
-  ];
 
   for (let catIndex = 0; catIndex < categories.length; catIndex++) {
     for (let i = 0; i < 15; i++) {
       const seller = sellers[productIndex % sellers.length];
-      const productName = `${productNames[productIndex % productNames.length]} ${catIndex + 1}`;
+      const productName = `${PRODUCTS_NAMES[productIndex % PRODUCTS_NAMES.length]} ${catIndex + 1}`;
       const price = Math.floor(Math.random() * 500 + 20) + 0.99;
 
       products.push({
-        _id: generateObjectId('prod_', productIndex),
+        _id: { $oid: generateObjectId(ID_PREFIX.PRODUCT, productIndex) },
         name: productName,
         description: `High quality product from ${categories[catIndex].name} category`,
         price: price,
@@ -227,7 +206,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
   COUPON_CODES.forEach((code, index) => {
     const isPercentage = index % 2 === 0;
     coupons.push({
-      _id: generateObjectId('coup_', index + 1),
+      _id: { $oid: generateObjectId(ID_PREFIX.COUPON, index + 1) },
       code: code,
       description: `Save with ${code}`,
       discountType: isPercentage ? 'percentage' : 'fixed',
@@ -282,7 +261,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     const total = Math.round((subtotal - discount + tax + shipping) * 100) / 100;
 
     orders.push({
-      _id: generateObjectId('ord_', i + 1),
+      _id: { $oid: generateObjectId(ID_PREFIX.ORDER, i + 1) },
       orderNumber: `ORD-${Date.now()}-${i + 1}`,
       customerId: customer._id,
       customerEmail: customer.email,
@@ -317,7 +296,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     const titleIndex = i % REVIEW_TITLES.length;
 
     reviews.push({
-      _id: generateObjectId('rev_', i + 1),
+      _id: { $oid: generateObjectId(ID_PREFIX.REVIEW, i + 1) },
       productId: product._id,
       userId: customer._id,
       userName: customer.name,
@@ -338,7 +317,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     const cityIndex = i % CITIES.length;
 
     addresses.push({
-      _id: generateObjectId('addr_', i + 1),
+      _id: { $oid: generateObjectId(ID_PREFIX.ADDRESS, i + 1) },
       userId: user._id,
       street: `${Math.floor(Math.random() * 9999) + 1} ${STREETS[i % STREETS.length]}`,
       city: CITIES[cityIndex],
@@ -364,7 +343,7 @@ export async function generateAllSampleData(): Promise<GeneratedData> {
     }
 
     tickets.push({
-      _id: generateObjectId('tkt_', i + 1),
+      _id: { $oid: generateObjectId(ID_PREFIX.TICKET, i + 1) },
       ticketId: `TKT-2025-${String(i + 1).padStart(4, '0')}`,
       subject: TICKET_SUBJECTS[i % TICKET_SUBJECTS.length],
       description: TICKET_DESCRIPTIONS[i % TICKET_DESCRIPTIONS.length],

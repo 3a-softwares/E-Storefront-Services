@@ -54,17 +54,14 @@ export interface ITicket extends Document {
   closedAt?: Date;
 }
 
-const commentSchema = new Schema<IComment>(
-  {
-    userId: { type: String, required: true },
-    userName: { type: String, required: true },
-    userRole: { type: String, required: true },
-    message: { type: String, required: true },
-    isInternal: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now },
-  },
-  { _id: false }
-);
+const commentSchema = new Schema<IComment>({
+  userId: { type: String, required: true },
+  userName: { type: String, required: true },
+  userRole: { type: String, required: true },
+  message: { type: String, required: true },
+  isInternal: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+});
 
 const ticketSchema = new Schema<ITicket>(
   {

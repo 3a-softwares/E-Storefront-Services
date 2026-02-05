@@ -75,7 +75,7 @@ export const sendEmail = async (
     const transport = await getTransporter();
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || '"3A E-Commerce" <noreply3asoftwares.com>',
+      from: process.env.EMAIL_FROM || '"3A Storefront" <noreply3asoftwares.com>',
       to: options.to,
       subject: options.subject,
       html: options.html,
@@ -115,7 +115,7 @@ export const sendVerificationEmailTemplate = async (
   name: string,
   verificationUrl: string
 ): Promise<{ success: boolean; messageId?: string; previewUrl?: string }> => {
-  const subject = 'Verify Your Email - 3A E-Commerce';
+  const subject = 'Verify Your Email - 3A Storefront';
 
   const html = `
     <!DOCTYPE html>
@@ -133,7 +133,7 @@ export const sendVerificationEmailTemplate = async (
               <!-- Header -->
               <tr>
                 <td style="background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%); padding: 40px; text-align: center; border-radius: 8px 8px 0 0;">
-                  <h1 style="color: #ffffff; margin: 0; font-size: 28px;">3A E-Commerce</h1>
+                  <h1 style="color: #ffffff; margin: 0; font-size: 28px;">3A Storefront</h1>
                   <p style="color: #d1d5db; margin: 10px 0 0 0; font-size: 14px;">Your favorite online store</p>
                 </td>
               </tr>
@@ -176,7 +176,7 @@ export const sendVerificationEmailTemplate = async (
               <tr>
                 <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
                   <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                    © ${new Date().getFullYear()} 3A E-Commerce. All rights reserved.
+                    © ${new Date().getFullYear()} 3A Storefront. All rights reserved.
                   </p>
                   <p style="color: #9ca3af; font-size: 12px; margin: 10px 0 0 0;">
                     This is an automated message. Please do not reply.
@@ -202,7 +202,7 @@ export const sendPasswordResetEmailTemplate = async (
   name: string,
   resetUrl: string
 ): Promise<{ success: boolean; messageId?: string; previewUrl?: string }> => {
-  const subject = 'Reset Your Password - 3A E-Commerce';
+  const subject = 'Reset Your Password - 3A Storefront';
 
   const html = `
     <!DOCTYPE html>
@@ -220,7 +220,7 @@ export const sendPasswordResetEmailTemplate = async (
               <!-- Header -->
               <tr>
                 <td style="background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%); padding: 40px; text-align: center; border-radius: 8px 8px 0 0;">
-                  <h1 style="color: #ffffff; margin: 0; font-size: 28px;">3A E-Commerce</h1>
+                  <h1 style="color: #ffffff; margin: 0; font-size: 28px;">3A Storefront</h1>
                   <p style="color: #d1d5db; margin: 10px 0 0 0; font-size: 14px;">Your favorite online store</p>
                 </td>
               </tr>
@@ -265,7 +265,7 @@ export const sendPasswordResetEmailTemplate = async (
               <tr>
                 <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
                   <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                    © ${new Date().getFullYear()} 3A E-Commerce. All rights reserved.
+                    © ${new Date().getFullYear()} 3A Storefront. All rights reserved.
                   </p>
                   <p style="color: #9ca3af; font-size: 12px; margin: 10px 0 0 0;">
                     This is an automated message. Please do not reply.

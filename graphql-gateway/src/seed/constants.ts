@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 
-export const DATABASE_NAME = 'ecommerce';
+export const DATABASE_NAME = 'e-storefront';
 
 export const COLLECTIONS = {
   users: 'users',
@@ -252,6 +252,34 @@ export const COUPON_CODES = [
   'BRONZE25',
   'PLAT30',
 ];
+
+export const PRODUCTS_NAMES = [
+  'Laptop',
+  'Mouse',
+  'Keyboard',
+  'Monitor',
+  'Headphones',
+  'Speaker',
+  'Phone',
+  'Tablet',
+  'T-Shirt',
+  'Jeans',
+  'Jacket',
+  'Shoes',
+  'Hat',
+  'Scarf',
+  'Boots',
+  'Dress',
+  'Coffee Maker',
+  'Blender',
+  'Microwave',
+  'Toaster',
+  'Vacuum',
+  'Dishwasher',
+  'Refrigerator',
+  'Oven',
+];
+
 
 export const CATEGORIES = [
   {
