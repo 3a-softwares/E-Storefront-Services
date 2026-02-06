@@ -85,9 +85,14 @@ app.use((err: any, req: Request, res: Response, __: any) => {
 });
 
 const startServer = async () => {
-  await connectDatabase();
+  try {
+    await connectDatabase();
+  } catch (error: any) {
+    Logger.error('Failed to connect to database', error, 'Startup');
+  }
+
   app.listen(PORT, () => {
-    Logger.info(`Auth service running on port- ${PORT}`, undefined, 'Startup');
+    Logger.info(`Auth service running on port ${PORT}`, undefined, 'Startup');
     Logger.info(
       `Swagger docs available at http://localhost:${PORT}/api-docs`,
       undefined,
@@ -109,6 +114,11 @@ process.on('SIGINT', () => {
 // Only start the server if not running in a serverless environment (Vercel)
 if (process.env.VERCEL !== '1') {
   startServer();
+} else {
+  // In Vercel (serverless), ensure a DB connection is established for handlers
+  connectDatabase().catch((error: any) => {
+    Logger.error('Failed to connect to database in Vercel', error, 'Startup');
+  });
 }
 
 export default app;
