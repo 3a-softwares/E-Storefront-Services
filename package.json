@@ -1,6 +1,6 @@
 {
   "name": "e-services",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Backend microservices monorepo - Auth, Category, Coupon, GraphQL Gateway, Order, Product, Ticket services",
   "workspaces": [
