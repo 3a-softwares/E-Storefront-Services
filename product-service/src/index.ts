@@ -82,7 +82,7 @@ const startServer = async () => {
   try {
     await connectDatabase();
     app.listen(PORT, () => {
-      Logger.info(`Product service running on port: ${PORT}`, undefined, 'Server');
+      Logger.info(`Product service running on port- ${PORT}`, undefined, 'Server');
       Logger.info(
         `Swagger docs available at http://localhost:${PORT}/api-docs`,
         undefined,

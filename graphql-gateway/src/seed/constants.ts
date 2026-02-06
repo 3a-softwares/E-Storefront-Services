@@ -280,7 +280,6 @@ export const PRODUCTS_NAMES = [
   'Oven',
 ];
 
-
 export const CATEGORIES = [
   {
     name: 'Electronics',

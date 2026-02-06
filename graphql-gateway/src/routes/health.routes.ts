@@ -4,7 +4,11 @@
  */
 
 import { Router } from 'express';
-import { gatewayHealthHandler, servicesHealthHandler, serviceHealthHandler } from '../controllers/health.controller';
+import {
+  gatewayHealthHandler,
+  servicesHealthHandler,
+  serviceHealthHandler,
+} from '../controllers/health.controller';
 
 const router = Router();
 

@@ -85,7 +85,7 @@ const startServer = async () => {
   try {
     await connectDatabase();
     httpServer.listen(PORT, () => {
-      Logger.info(`Order service running on port: ${PORT}`, undefined, 'Startup');
+      Logger.info(`Order service running on port- ${PORT}`, undefined, 'Startup');
       Logger.info('WebSocket server initialized', undefined, 'Startup');
       Logger.info(
         `Swagger docs available at http://localhost:${PORT}/api-docs`,

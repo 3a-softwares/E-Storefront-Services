@@ -41,7 +41,7 @@ const generateObjectId = (prefix: string, index: number): string => {
   const hexIndex = index.toString(16).padStart(Math.max(0, remaining), '0');
   const id = `${safePrefix}${hexIndex}`.padStart(24, '0').slice(0, 24);
   return id;
-};;
+};
 
 const generateDate = (startYear: number, endYear: number): string => {
   const start = new Date(startYear, 0, 1).getTime();

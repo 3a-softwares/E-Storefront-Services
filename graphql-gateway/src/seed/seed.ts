@@ -36,7 +36,6 @@ function convertNestedObject(value: any): any {
   return value;
 }
 
-
 export async function seedDatabase(): Promise<{
   success: boolean;
   message: string;

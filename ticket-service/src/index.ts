@@ -76,7 +76,7 @@ const startServer = async () => {
   try {
     await connectDatabase();
     app.listen(PORT, () => {
-      Logger.info(`Ticket service running on port: ${PORT}`, undefined, 'Startup');
+      Logger.info(`Ticket service running on port- ${PORT}`, undefined, 'Startup');
       Logger.info(
         `Swagger docs available at http://localhost:${PORT}/api-docs`,
         undefined,

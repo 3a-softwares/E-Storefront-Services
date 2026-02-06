@@ -154,7 +154,7 @@ async function startApolloServer() {
 
 startApolloServer()
   .then(() => {
-    Logger.info(`GraphQL Gateway running on port: ${PORT}`, undefined, 'Server');
+    Logger.info(`GraphQL Gateway running on port- ${PORT}`, undefined, 'Server');
   })
   .catch((error) => {
     Logger.error('Failed to start Apollo Server', error, 'Server');
