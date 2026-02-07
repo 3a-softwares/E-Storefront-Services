@@ -77,7 +77,6 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     });
   }
 });
-app.use(express.urlencoded({ extended: true }));
 
 app.get('/health', (_: Request, res: Response) => {
   res.status(200).json({
