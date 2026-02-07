@@ -9,7 +9,7 @@ import path from 'path';
 const envPath = path.resolve(__dirname, '../.env.local');
 dotenv.config({ path: envPath });
 
-import express, { Application, Request, Response } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -36,6 +36,10 @@ Logger.configure({
 const app: Application = express();
 const PORT = process.env.PORT || PORT_CONFIG.AUTH;
 
+// Module-level promise to track database connection readiness (for serverless)
+let dbConnectionPromise: Promise<void> | null = null;
+let isConnected = false;
+
 app.use(helmet());
 app.use(
   cors({
@@ -46,6 +50,30 @@ app.use(
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware to ensure database connection is ready before processing requests
+// Critical for Vercel serverless environment where cold starts happen
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // If running on Vercel or no connection exists, ensure DB is connected
+    if (isVercel || !isConnected) {
+      if (!dbConnectionPromise) {
+        dbConnectionPromise = connectDatabase().then(() => {
+          isConnected = true;
+        });
+      }
+      await dbConnectionPromise;
+    }
+    next();
+  } catch (error: any) {
+    Logger.error('Database connection middleware error', error, 'Middleware');
+    res.status(503).json({
+      success: false,
+      message: 'Database connection failed',
+      error: error.message,
+    });
+  }
+});
 
 app.get('/health', (_: Request, res: Response) => {
   res.status(200).json({
@@ -114,11 +142,6 @@ process.on('SIGINT', () => {
 // Only start the server if not running in a serverless environment (Vercel)
 if (process.env.VERCEL !== '1') {
   startServer();
-} else {
-  // In Vercel (serverless), ensure a DB connection is established for handlers
-  connectDatabase().catch((error: any) => {
-    Logger.error('Failed to connect to database in Vercel', error, 'Startup');
-  });
 }
 
 export default app;

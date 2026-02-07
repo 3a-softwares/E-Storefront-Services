@@ -5,10 +5,24 @@ import { DATABASE_CONFIG } from '@3asoftwares/utils';
 const MONGODB_URL = process.env.MONGODB_URL || DATABASE_CONFIG.MONGODB_URL;
 export const connectDatabase = async (): Promise<void> => {
   try {
+    // Check if already connected
+    if (mongoose.connection.readyState === 1) {
+      Logger.info('MongoDB already connected', undefined, 'Database');
+      return;
+    }
+
+    // Optimize connection options for both serverless and traditional environments
+    const isServerless = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
     const options = {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
+      maxPoolSize: isServerless ? 5 : 10, // Smaller pool for serverless
+      minPoolSize: isServerless ? 1 : 0,
+      serverSelectionTimeoutMS: isServerless ? 15000 : 5000, // Longer timeout for Vercel cold starts
+      socketTimeoutMS: isServerless ? 60000 : 45000, // Longer socket timeout for slow networks
+      maxIdleTimeMS: isServerless ? 30000 : undefined, // Close idle connections faster on serverless
+      retryWrites: true,
+      retryReads: true,
+      connectTimeoutMS: 20000,
+      family: 4, // Use IPv4 only (more reliable with MongoDB Atlas)
     };
 
     await mongoose.connect(MONGODB_URL, options);
