@@ -19,6 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       auth: ${{ steps.filter.outputs.auth }}
+      category: ${{ steps.filter.outputs.category }}
+      coupon: ${{ steps.filter.outputs.coupon }}
+      graphql: ${{ steps.filter.outputs.graphql }}
+      order: ${{ steps.filter.outputs.order }}
+      product: ${{ steps.filter.outputs.product }}
+      ticket: ${{ steps.filter.outputs.ticket }}
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +34,19 @@ jobs:
           filters: |
             auth:
               - auth-service/**
-    
+            category:
+              - category-service/**
+            coupon:
+              - coupon-service/**
+            graphql:
+              - graphql-gateway/**
+            order:
+              - order-service/**
+            product:
+              - product-service/**
+            ticket:
+              - ticket-service/**
+
   # ===================== DEPLOY =====================
   deploy:
     name: Deploy (${{ matrix.service }})
@@ -42,7 +60,13 @@ jobs:
       matrix:
         service:
           - auth-service
-    
+          - category-service
+          - coupon-service
+          - graphql-gateway
+          - order-service
+          - product-service
+          - ticket-service
+
     steps:
       - uses: actions/checkout@v4
 
@@ -67,11 +91,23 @@ jobs:
         run: |
           case "${{ matrix.service }}" in
             auth-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_AUTH_SERVICE }}" >> $GITHUB_ENV ;;
+            category-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_CATEGORY_SERVICE }}" >> $GITHUB_ENV ;;
+            coupon-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_COUPON_SERVICE }}" >> $GITHUB_ENV ;;
+            graphql-gateway) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_GRAPHQL_GATEWAY }}" >> $GITHUB_ENV ;;
+            order-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_ORDER_SERVICE }}" >> $GITHUB_ENV ;;
+            product-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_PRODUCT_SERVICE }}" >> $GITHUB_ENV ;;
+            ticket-service) echo "PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID_TICKET_SERVICE }}" >> $GITHUB_ENV ;;
           esac
 
       - name: Deploy to Vercel
         if: |
-          (matrix.service == 'auth-service' && needs.detect-changes.outputs.auth == 'true')
+          (matrix.service == 'auth-service' && needs.detect-changes.outputs.auth == 'true') ||
+          (matrix.service == 'category-service' && needs.detect-changes.outputs.category == 'true') ||
+          (matrix.service == 'coupon-service' && needs.detect-changes.outputs.coupon == 'true') ||
+          (matrix.service == 'graphql-gateway' && needs.detect-changes.outputs.graphql == 'true') ||
+          (matrix.service == 'order-service' && needs.detect-changes.outputs.order == 'true') ||
+          (matrix.service == 'product-service' && needs.detect-changes.outputs.product == 'true') ||
+          (matrix.service == 'ticket-service' && needs.detect-changes.outputs.ticket == 'true')
         run: |
           vercel deploy --prod \
             --token=${{ secrets.VERCEL_TOKEN }} \

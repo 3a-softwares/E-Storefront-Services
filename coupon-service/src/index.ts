@@ -9,7 +9,7 @@ import path from 'path';
 const envPath = path.resolve(__dirname, '../.env.local');
 dotenv.config({ path: envPath });
 
-import express, { Application, Request, Response } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -19,16 +19,24 @@ import couponRoutes from './routes/couponRoutes';
 import { PORT_CONFIG, DEFAULT_CORS_ORIGINS } from '@3asoftwares/utils';
 import { Logger } from '@3asoftwares/utils/server';
 
+// Check if running on Vercel (serverless environment)
+const isVercel = process.env.VERCEL === '1';
+
 // Configure logger for coupon service
+// Disable file logging on Vercel since serverless has no persistent filesystem
 Logger.configure({
   enableConsole: true,
-  enableFile: process.env.ENABLE_FILE_LOGGING === 'true',
+  enableFile: !isVercel && process.env.ENABLE_FILE_LOGGING === 'true',
   logFilePath: process.env.LOG_FILE_PATH || 'logs/coupon-service.log',
   logLevel: process.env.LOG_LEVEL || 'debug',
 });
 
 const app: Application = express();
 const PORT = process.env.PORT || PORT_CONFIG.COUPON;
+
+// Module-level promise to track database connection readiness (for serverless)
+let dbConnectionPromise: Promise<void> | null = null;
+let isConnected = false;
 
 app.use(helmet());
 app.use(
@@ -40,6 +48,30 @@ app.use(
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware to ensure database connection is ready before processing requests
+// Critical for Vercel serverless environment where cold starts happen
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // If running on Vercel or no connection exists, ensure DB is connected
+    if (isVercel || !isConnected) {
+      if (!dbConnectionPromise) {
+        dbConnectionPromise = connectDatabase().then(() => {
+          isConnected = true;
+        });
+      }
+      await dbConnectionPromise;
+    }
+    next();
+  } catch (error: any) {
+    Logger.error('Database connection middleware error', error, 'Middleware');
+    res.status(503).json({
+      success: false,
+      message: 'Database connection failed',
+      error: error.message,
+    });
+  }
+});
 
 // Setup Swagger documentation
 setupSwagger(app);
@@ -78,15 +110,18 @@ app.use((err: any, req: Request, res: Response, _next: any) => {
 
 const startServer = async () => {
   try {
-    await connectDatabase();
-    app.listen(PORT, () => {
-      Logger.info(`Coupon service running on port- ${PORT}`, undefined, 'Startup');
-      Logger.info(
-        `Swagger docs available at http://localhost:${PORT}/api-docs`,
-        undefined,
-        'Startup'
-      );
-    });
+    // Only listen if not running in serverless environment
+    if (process.env.VERCEL !== '1') {
+      await connectDatabase();
+      app.listen(PORT, () => {
+        Logger.info(`Coupon service running on port ${PORT}`, undefined, 'Startup');
+        Logger.info(
+          `Swagger docs available at http://localhost:${PORT}/api-docs`,
+          undefined,
+          'Startup'
+        );
+      });
+    }
   } catch (error: any) {
     Logger.error('Failed to start server', { error: error.message }, 'Startup');
     process.exit(1);
