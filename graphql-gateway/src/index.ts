@@ -37,6 +37,27 @@ Logger.configure({
 
 const PORT = process.env.PORT || PORT_CONFIG.GRAPHQL;
 
+// Parse and normalize allowed origins (trim whitespace)
+const getAllowedOrigins = (): string[] => {
+  if (process.env.ALLOWED_ORIGINS) {
+    return process.env.ALLOWED_ORIGINS.split(',')
+      .map((origin) => origin.trim())
+      .filter((origin) => origin.length > 0);
+  }
+  return DEFAULT_CORS_ORIGINS;
+};
+
+// CORS options configuration
+const corsOptions = {
+  origin: getAllowedOrigins(),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400, // 24 hours
+};
+
+Logger.info(`CORS allowed origins: ${JSON.stringify(corsOptions.origin)}`, undefined, 'Server');
+
 let apolloServer: ApolloServer | null = null;
 let httpServer: any = null;
 let initializationPromise: Promise<express.Application> | null = null;
@@ -62,13 +83,12 @@ async function initializeApolloServer() {
     apolloServer = server;
     await server.start();
 
+    // Apply CORS middleware globally for all routes (handles preflight requests)
+    app.use(cors<cors.CorsRequest>(corsOptions));
+
     app.use(
       '/graphql',
-      cors<cors.CorsRequest>({
-        origin: process.env.ALLOWED_ORIGINS?.split(',') || DEFAULT_CORS_ORIGINS,
-        credentials: true,
-      }),
-      express.json(),
+      express.json({ limit: '10mb' }),
       expressMiddleware(server, {
         context: async ({ req }) => {
           const token = req.headers.authorization?.replace('Bearer ', '') || '';
@@ -123,10 +143,6 @@ async function initializeApolloServer() {
     // Register API routes with /api prefix
     app.use(
       '/api',
-      cors<cors.CorsRequest>({
-        origin: process.env.ALLOWED_ORIGINS?.split(',') || DEFAULT_CORS_ORIGINS,
-        credentials: true,
-      }),
       express.json(),
       (req, res, next) => {
         // Attach user context to request for authorization
