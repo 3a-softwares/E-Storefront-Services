@@ -5,9 +5,12 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables
-const envPath = path.resolve(__dirname, '../.env.local');
-dotenv.config({ path: envPath });
+// Load environment variables from .env file ONLY in development
+// On Vercel, environment variables are injected automatically
+if (process.env.NODE_ENV !== 'production') {
+  const envPath = path.resolve(__dirname, '../.env.local');
+  dotenv.config({ path: envPath });
+}
 
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
@@ -19,6 +22,10 @@ import ticketRoutes from './routes/ticketRoutes';
 import { PORT_CONFIG, DEFAULT_CORS_ORIGINS } from './utils/config';
 import { Logger } from './utils/logger';
 
+// Log CORS configuration for debugging
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || DEFAULT_CORS_ORIGINS;
+Logger.info(`ALLOWED_ORIGINS configured: ${JSON.stringify(allowedOrigins)}`, undefined, 'CORS');
+
 const app: Application = express();
 const PORT = process.env.PORT || PORT_CONFIG.TICKET_SERVICE;
 
@@ -26,7 +33,7 @@ const PORT = process.env.PORT || PORT_CONFIG.TICKET_SERVICE;
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || DEFAULT_CORS_ORIGINS,
+    origin: allowedOrigins,
     credentials: true,
   })
 );

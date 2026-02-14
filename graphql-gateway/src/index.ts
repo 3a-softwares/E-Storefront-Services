@@ -5,11 +5,12 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables from .env file FIRST before any other imports
-// Load based on NODE_ENV: development -> .env.local, production -> .env.production
-const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local';
-const envPath = path.resolve(__dirname, `../${envFile}`);
-dotenv.config({ path: envPath });
+// Load environment variables from .env file ONLY in development
+// On Vercel, environment variables are injected automatically
+if (process.env.NODE_ENV !== 'production') {
+  const envPath = path.resolve(__dirname, '../.env.local');
+  dotenv.config({ path: envPath });
+}
 
 import { ApolloServer } from '@apollo/server';
 import jwt from 'jsonwebtoken';
@@ -58,7 +59,8 @@ const corsOptions = {
   maxAge: 86400, // 24 hours
 };
 
-Logger.info(`CORS allowed origins: ${JSON.stringify(corsOptions.origin)}`, undefined, 'Server');
+Logger.info(`ALLOWED_ORIGINS: ${process.env.ALLOWED_ORIGINS || 'NOT SET (using defaults)'}`, undefined, 'CORS');
+Logger.info(`CORS allowed origins configured: ${JSON.stringify(corsOptions.origin)}`, undefined, 'CORS');
 
 let apolloServer: ApolloServer | null = null;
 let httpServer: any = null;
